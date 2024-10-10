@@ -1,0 +1,53 @@
+Project grocery_server_db {
+  database_type: 'SQLite'
+  Note: 'This will store users, grocery lists and items'
+}
+
+
+Table users {
+    id varchar [pk]
+    household varchar [ref: > households.id]
+    username varchar
+    join_time timestamp
+}
+
+Table categories {
+    category_id varchar [pk]
+    family_id varchar [ref: > households.id, null]
+    category_name varchar
+    Note {
+        '''Category names don't need to be unique, only within a household
+        This prevents other households from deleting your custom categories'''
+    }
+}
+
+Table grocery_lists {
+    id varchar [pk]
+    family_id varchar [ref: > households.id]
+    creation_time timestamp
+    Note {
+        "hi this is a note"
+    }
+}
+
+
+Table grocery_list_items {
+    list_id varchar [ref: > grocery_lists.id]
+    item_id varchar [ref: > items.id]
+    quantity int
+}
+
+Table items {
+    id varchar [pk]
+    item_name varchar
+    category_id varchar [ref: > categories.category_id]
+    creation_time timestamp
+    last_used timestamp
+}
+
+Table households {
+    id varchar
+    name varchar
+    owner varchar [ref: - users.id]
+    creation_time timestamp
+}
