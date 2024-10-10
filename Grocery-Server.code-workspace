@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../AppData/Local/Groceries-Server"
+		}
+	],
+	"settings": {
+		"dbmlERDPreviewer.preferredTheme": "dark"
+	}
+}

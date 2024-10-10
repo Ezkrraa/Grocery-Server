@@ -13,7 +13,7 @@ Table users {
 
 Table categories {
     category_id varchar [pk]
-    family_id varchar [ref: > households.id, null]
+    household_id varchar [ref: > households.id, null]
     category_name varchar
     Note {
         '''Category names don't need to be unique, only within a household
@@ -23,7 +23,7 @@ Table categories {
 
 Table grocery_lists {
     id varchar [pk]
-    family_id varchar [ref: > households.id]
+    household_id varchar [ref: > households.id]
     creation_time timestamp
     Note {
         "hi this is a note"
