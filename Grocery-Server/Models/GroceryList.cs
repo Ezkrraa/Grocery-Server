@@ -14,5 +14,12 @@ public class GroceryList
 
     public HouseHold HouseHold { get; set; }
 
+    public GroceryList(Guid householdId)
+    {
+        Id = new();
+        HouseHoldId = householdId;
+        CreationTime = DateTime.UtcNow;
+    }
+
     public GroceryList() { }
 }

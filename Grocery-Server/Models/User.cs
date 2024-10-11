@@ -15,6 +15,7 @@ public class User : IdentityUser
     public Guid? HouseHoldId { get; set; }
 
     public virtual HouseHold? HouseHold { get; set; }
+    public virtual ICollection<HouseHoldInvite> Invites { get; set; }
 
     public User(ControllerModels.NewUserDTO dto)
     {

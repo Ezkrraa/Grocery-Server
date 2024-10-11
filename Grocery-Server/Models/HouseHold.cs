@@ -25,6 +25,7 @@ public class HouseHold
     public virtual ICollection<GroceryList>? GroceryLists { get; set; }
 
     public virtual ICollection<GroceryCategory>? CustomCategories { get; set; }
+    public virtual ICollection<HouseHoldInvite>? Invites { get; set; }
 
     public HouseHold(ControllerModels.NewHouseHoldDTO model)
     {

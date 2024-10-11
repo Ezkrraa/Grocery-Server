@@ -30,7 +30,6 @@ Table grocery_lists {
     }
 }
 
-
 Table grocery_list_items {
     list_id varchar [ref: > grocery_lists.id]
     item_id varchar [ref: > items.id]
@@ -50,4 +49,9 @@ Table households {
     name varchar
     owner varchar [ref: - users.id]
     creation_time timestamp
+}
+
+Table invites {
+    userId varchar [ref: > users.id]
+    householdId varchar [ref: > households.id]
 }

@@ -10,7 +10,7 @@ namespace Grocery_Server.Controllers
 {
     //[Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/test")]
     public class TestController : ControllerBase
     {
         private readonly ILogger<TestController> _logger;
@@ -117,6 +117,12 @@ namespace Grocery_Server.Controllers
                 return NotFound();
             _dbContext.Entry(category).Collection(category => category.Items).Load();
             return Ok(category.Items.Select(item => new ItemDisplayDTO(item)).ToList());
+        }
+
+        [HttpGet("get-all-items")]
+        public IActionResult GetAllItems()
+        {
+            return Ok(_dbContext.GroceryItems.Select(item => new ItemDisplayDTO(item)).ToList());
         }
     }
 }

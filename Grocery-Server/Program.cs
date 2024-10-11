@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Identity.Abstractions;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Resource;
+using SwaggerThemes;
 
 namespace Grocery_Server
 {
@@ -34,6 +35,7 @@ namespace Grocery_Server
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
+                //app.UseSwaggerThemes(Theme.UniversalDark);
                 app.UseSwaggerUI();
             }
 
