@@ -2,7 +2,5 @@
 
 public class CreateListDTO
 {
-    public Guid HouseId { get; set; }
-
-    public List<NewGroceryListItemDTO> Items { get; set; }
+    public List<AddToListItemDTO> Items { get; set; }
 }

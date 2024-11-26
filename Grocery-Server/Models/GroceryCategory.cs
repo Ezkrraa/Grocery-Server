@@ -10,20 +10,20 @@ public class GroceryCategory
 {
     public Guid Id { get; set; }
 
-    public Guid HouseHoldId { get; set; }
+    public Guid GroupId { get; set; }
     public string CategoryName { get; set; }
 
-    public HouseHold HouseHold { get; set; }
+    public virtual Group Group { get; set; }
 
-    public ICollection<GroceryItem> Items { get; set; }
+    public virtual ICollection<GroceryItem> Items { get; set; }
 
     public GroceryCategory(ControllerModels.NewCategoryDTO newCategoryDTO)
-        : this(newCategoryDTO.Name, newCategoryDTO.HouseHoldId) { }
+        : this(newCategoryDTO.Name, newCategoryDTO.GroupId) { }
 
-    public GroceryCategory(string name, Guid houseHoldId)
+    public GroceryCategory(string name, Guid groupId)
     {
         CategoryName = name;
-        HouseHoldId = houseHoldId;
+        GroupId = groupId;
     }
     public GroceryCategory() { }
 }

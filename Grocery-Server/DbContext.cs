@@ -8,13 +8,14 @@ namespace Grocery_Server;
 
 public class DbContext : IdentityDbContext<User>
 {
-    public DbSet<User> Users { get; set; }
-    public DbSet<HouseHold> HouseHolds { get; set; }
+    // explicitly override it to show all my columns here
+    public override DbSet<User> Users { get; set; }
+    public DbSet<Group> Groups { get; set; }
     public DbSet<GroceryList> GroceryLists { get; set; }
     public DbSet<GroceryListItem> GroceryListItems { get; set; }
     public DbSet<GroceryItem> GroceryItems { get; set; }
     public DbSet<GroceryCategory> GroceryCategories { get; set; }
-    public DbSet<HouseHoldInvite> HouseholdInvites { get; set; }
+    public DbSet<GroupInvite> GroupInvites { get; set; }
 
     public string DbPath { get; }
 
@@ -35,31 +36,31 @@ public class DbContext : IdentityDbContext<User>
         modelBuilder.Entity<GroceryListItem>()
             .HasKey(gli => new { gli.ItemId, gli.ListId });
         // hhi has a composite pk
-        modelBuilder.Entity<HouseHoldInvite>()
-            .HasKey(invite => new { invite.UserId, invite.HouseholdId });
+        modelBuilder.Entity<GroupInvite>()
+            .HasKey(invite => new { invite.UserId, invite.GroupId });
 
-        // specify the HouseHold's owner
-        modelBuilder.Entity<HouseHold>()
+        // specify the Group's owner
+        modelBuilder.Entity<Group>()
             .HasOne(h => h.Owner)
             .WithOne() // skip navigation back
-            .HasForeignKey<HouseHold>(h => h.OwnerId)
+            .HasForeignKey<Group>(h => h.OwnerId)
             .OnDelete(DeleteBehavior.SetNull);
         modelBuilder.Entity<User>()
-            .HasOne(u => u.HouseHold)
+            .HasOne(u => u.Group)
             .WithMany(h => h.Members)
-            .HasForeignKey(u => u.HouseHoldId)
+            .HasForeignKey(u => u.GroupId)
             .OnDelete(DeleteBehavior.SetNull)
             .IsRequired(false);
 
-        modelBuilder.Entity<HouseHold>()
+        modelBuilder.Entity<Group>()
             .HasMany(h => h.GroceryLists)
-            .WithOne(gl => gl.HouseHold)
-            .HasForeignKey(gl => gl.HouseHoldId)
+            .WithOne(gl => gl.Group)
+            .HasForeignKey(gl => gl.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<HouseHold>()
+        modelBuilder.Entity<Group>()
             .HasMany(h => h.CustomCategories)
-            .WithOne(c => c.HouseHold)
-            .HasForeignKey(c => c.HouseHoldId)
+            .WithOne(c => c.Group)
+            .HasForeignKey(c => c.GroupId)
             .IsRequired(false);
 
         modelBuilder.Entity<GroceryList>()
@@ -73,7 +74,7 @@ public class DbContext : IdentityDbContext<User>
             .WithMany()
             .HasForeignKey(gli => gli.ItemId)
             .HasPrincipalKey(i => i.Id)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<GroceryItem>()
             .HasOne(i => i.Category)
@@ -82,21 +83,22 @@ public class DbContext : IdentityDbContext<User>
             .HasPrincipalKey(c => c.Id)
             .OnDelete(DeleteBehavior.NoAction);
 
-        // delete invite if household or user gets deleted
+        // delete invite if group or user gets deleted
         modelBuilder.Entity<User>()
             .HasMany(e => e.Invites)
             .WithOne(invite => invite.User)
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<HouseHold>()
+        modelBuilder.Entity<Group>()
             .HasMany(e => e.Invites)
-            .WithOne(e => e.HouseHold)
-            .HasForeignKey(e => e.HouseholdId)
+            .WithOne(e => e.Group)
+            .HasForeignKey(e => e.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
 
         base.OnModelCreating(modelBuilder);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite($"Data Source={DbPath}");
+            => options.UseLazyLoadingProxies()
+                .UseSqlite($"Data Source={DbPath}");
 }

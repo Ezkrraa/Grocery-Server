@@ -11,14 +11,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Grocery_Server.Migrations
 {
     [DbContext(typeof(DbContext))]
-    [Migration("20241010231742_Saved from deletion somehow")]
-    partial class Savedfromdeletionsomehow
+    [Migration("20241126174806_redoMigrationsNow")]
+    partial class redoMigrationsNow
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true);
 
             modelBuilder.Entity("Grocery_Server.Models.GroceryCategory", b =>
                 {
@@ -30,12 +34,12 @@ namespace Grocery_Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("HouseHoldId")
+                    b.Property<Guid>("GroupId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HouseHoldId");
+                    b.HasIndex("GroupId");
 
                     b.ToTable("GroceryCategories");
                 });
@@ -75,12 +79,12 @@ namespace Grocery_Server.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("HouseHoldId")
+                    b.Property<Guid>("GroupId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HouseHoldId");
+                    b.HasIndex("GroupId");
 
                     b.ToTable("GroceryLists");
                 });
@@ -93,7 +97,7 @@ namespace Grocery_Server.Migrations
                     b.Property<Guid>("ListId")
                         .HasColumnType("TEXT");
 
-                    b.Property<short>("Quantity")
+                    b.Property<ushort>("Quantity")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ItemId", "ListId");
@@ -103,7 +107,7 @@ namespace Grocery_Server.Migrations
                     b.ToTable("GroceryListItems");
                 });
 
-            modelBuilder.Entity("Grocery_Server.Models.HouseHold", b =>
+            modelBuilder.Entity("Grocery_Server.Models.Group", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -125,7 +129,28 @@ namespace Grocery_Server.Migrations
                     b.HasIndex("OwnerId")
                         .IsUnique();
 
-                    b.ToTable("HouseHolds");
+                    b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("Grocery_Server.Models.GroupInvite", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpirationTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "GroupId");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("GroupInvites");
                 });
 
             modelBuilder.Entity("Grocery_Server.Models.User", b =>
@@ -147,7 +172,7 @@ namespace Grocery_Server.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("HouseHoldId")
+                    b.Property<Guid?>("GroupId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("JoinTime")
@@ -189,7 +214,7 @@ namespace Grocery_Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HouseHoldId");
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -331,11 +356,11 @@ namespace Grocery_Server.Migrations
 
             modelBuilder.Entity("Grocery_Server.Models.GroceryCategory", b =>
                 {
-                    b.HasOne("Grocery_Server.Models.HouseHold", "HouseHold")
+                    b.HasOne("Grocery_Server.Models.Group", "Group")
                         .WithMany("CustomCategories")
-                        .HasForeignKey("HouseHoldId");
+                        .HasForeignKey("GroupId");
 
-                    b.Navigation("HouseHold");
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("Grocery_Server.Models.GroceryItem", b =>
@@ -343,7 +368,7 @@ namespace Grocery_Server.Migrations
                     b.HasOne("Grocery_Server.Models.GroceryCategory", "Category")
                         .WithMany("Items")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -351,13 +376,13 @@ namespace Grocery_Server.Migrations
 
             modelBuilder.Entity("Grocery_Server.Models.GroceryList", b =>
                 {
-                    b.HasOne("Grocery_Server.Models.HouseHold", "HouseHold")
+                    b.HasOne("Grocery_Server.Models.Group", "Group")
                         .WithMany("GroceryLists")
-                        .HasForeignKey("HouseHoldId")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("HouseHold");
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("Grocery_Server.Models.GroceryListItem", b =>
@@ -365,7 +390,7 @@ namespace Grocery_Server.Migrations
                     b.HasOne("Grocery_Server.Models.GroceryItem", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Grocery_Server.Models.GroceryList", "List")
@@ -379,24 +404,44 @@ namespace Grocery_Server.Migrations
                     b.Navigation("List");
                 });
 
-            modelBuilder.Entity("Grocery_Server.Models.HouseHold", b =>
+            modelBuilder.Entity("Grocery_Server.Models.Group", b =>
                 {
                     b.HasOne("Grocery_Server.Models.User", "Owner")
                         .WithOne()
-                        .HasForeignKey("Grocery_Server.Models.HouseHold", "OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("Grocery_Server.Models.Group", "OwnerId")
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("Grocery_Server.Models.GroupInvite", b =>
+                {
+                    b.HasOne("Grocery_Server.Models.Group", "Group")
+                        .WithMany("Invites")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Grocery_Server.Models.User", "User")
+                        .WithMany("Invites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Grocery_Server.Models.User", b =>
                 {
-                    b.HasOne("Grocery_Server.Models.HouseHold", "HouseHold")
+                    b.HasOne("Grocery_Server.Models.Group", "Group")
                         .WithMany("Members")
-                        .HasForeignKey("HouseHoldId");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("HouseHold");
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -460,13 +505,20 @@ namespace Grocery_Server.Migrations
                     b.Navigation("GroceryListItems");
                 });
 
-            modelBuilder.Entity("Grocery_Server.Models.HouseHold", b =>
+            modelBuilder.Entity("Grocery_Server.Models.Group", b =>
                 {
                     b.Navigation("CustomCategories");
 
                     b.Navigation("GroceryLists");
 
+                    b.Navigation("Invites");
+
                     b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Grocery_Server.Models.User", b =>
+                {
+                    b.Navigation("Invites");
                 });
 #pragma warning restore 612, 618
         }

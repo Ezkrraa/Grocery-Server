@@ -5,6 +5,6 @@ namespace Grocery_Server.ControllerModels;
 
 public class NewCategoryDTO
 {
-    public Guid HouseHoldId { get; set; }
+    public Guid GroupId { get; set; }
     public string Name { get; set; }
 }

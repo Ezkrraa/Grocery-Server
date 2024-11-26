@@ -6,18 +6,18 @@ public class GroceryList
 {
     public Guid Id { get; set; }
 
-    public Guid HouseHoldId { get; set; }
+    public Guid GroupId { get; set; }
 
     public DateTime CreationTime { get; set; }
 
-    public ICollection<GroceryListItem>? GroceryListItems { get; set; }
+    public virtual ICollection<GroceryListItem>? GroceryListItems { get; set; }
 
-    public HouseHold HouseHold { get; set; }
+    public virtual Group Group { get; set; }
 
-    public GroceryList(Guid householdId)
+    public GroceryList(ControllerModels.CreateListDTO createList, Group group)
     {
         Id = new();
-        HouseHoldId = householdId;
+        GroupId = group.Id;
         CreationTime = DateTime.UtcNow;
     }
 

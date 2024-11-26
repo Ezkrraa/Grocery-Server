@@ -12,17 +12,17 @@ public class User : IdentityUser
     [Required]
     public DateTime? JoinTime { get; set; }
 
-    public Guid? HouseHoldId { get; set; }
+    public Guid? GroupId { get; set; }
 
-    public virtual HouseHold? HouseHold { get; set; }
-    public virtual ICollection<HouseHoldInvite> Invites { get; set; }
+    public virtual Group? Group { get; set; }
+    public virtual ICollection<GroupInvite> Invites { get; set; }
 
     public User(ControllerModels.NewUserDTO dto)
     {
         JoinTime = DateTime.UtcNow;
         UserName = dto.UserName;
         NormalizedUserName = dto.UserName.Normalize();
-        HouseHoldId = null;
+        GroupId = null;
         Email = dto.Email;
         NormalizedEmail = dto.Email.Normalize();
     }
@@ -32,6 +32,7 @@ public class User : IdentityUser
     {
         return other.UserName == UserName || other.Email == Email;
     }
-
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public User() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 }

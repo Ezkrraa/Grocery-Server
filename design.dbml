@@ -6,52 +6,52 @@ Project grocery_server_db {
 
 Table users {
     id varchar [pk]
-    household varchar [ref: > households.id]
+    group varchar [ref: > groups.id]
     username varchar
-    join_time timestamp
+    email varchar
+    joinTime timestamp
 }
 
 Table categories {
-    category_id varchar [pk]
-    household_id varchar [ref: > households.id, null]
-    category_name varchar
+    categoryId varchar [pk]
+    groupId varchar [ref: > groups.id, null]
+    categoryName varchar
     Note {
-        '''Category names don't need to be unique, only within a household
-        This prevents other households from deleting your custom categories'''
+        '''Category names don't need to be unique, only within a group
+        This prevents other groups from deleting your custom categories'''
     }
 }
 
 Table grocery_lists {
     id varchar [pk]
-    household_id varchar [ref: > households.id]
-    creation_time timestamp
-    Note {
-        "hi this is a note"
-    }
+    groupId varchar [ref: > groups.id]
+    creationTime timestamp
 }
 
 Table grocery_list_items {
-    list_id varchar [ref: > grocery_lists.id]
-    item_id varchar [ref: > items.id]
+    listId varchar [ref: > grocery_lists.id]
+    itemId varchar [ref: > items.id]
     quantity int
 }
 
 Table items {
     id varchar [pk]
-    item_name varchar
-    category_id varchar [ref: > categories.category_id]
-    creation_time timestamp
-    last_used timestamp
+    itemName varchar
+    categoryId varchar [ref: > categories.categoryId]
+    creationTime timestamp
+    lastUsed timestamp
 }
 
-Table households {
+Table groups {
     id varchar
     name varchar
     owner varchar [ref: - users.id]
-    creation_time timestamp
+    creationTime timestamp
 }
 
 Table invites {
     userId varchar [ref: > users.id]
-    householdId varchar [ref: > households.id]
+    groupId varchar [ref: > groups.id]
+    createdAt timestamp
+    expirationTime timestamp
 }

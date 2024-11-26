@@ -13,37 +13,56 @@ namespace Grocery_Server.Controllers
 {
     [ApiController]
     [Route("api/user")]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : ControllerBase
     {
         private readonly DbContext _dbContext;
-        public UserController([FromServices] DbContext dbContext)
+        private readonly UserManager<User> _userManager;
+
+        public UserController([FromServices] DbContext dbContext, UserManager<User> userManager)
         {
             _dbContext = dbContext;
+            _userManager = userManager;
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult GetInfo([FromQuery] Guid id)
         {
-            string idStr = id.ToString();
-            return Ok(_dbContext.Users.FirstOrDefault(user => user.Id == idStr));
+            User? user = _dbContext.Users.FirstOrDefault(user => user.Id == id.ToString());
+            if (user != null)
+                return Ok(new UserDisplayDTO(user));
+            return NotFound();
         }
 
         [HttpPost("create")]
-        public IActionResult CreateAccount([FromBody] NewUserDTO newUserDTO)
+        public async Task<IActionResult> CreateAccount([FromBody] NewUserDTO newUser)
         {
-            return Ok();
+            if (await _userManager.FindByEmailAsync(newUser.Email) == null && await _userManager.FindByNameAsync(newUser.UserName) == null)
+            {
+                User user = new(newUser);
+                await _userManager.CreateAsync(user);
+                await _userManager.AddPasswordAsync(user, newUser.Password);
+                return Ok();
+            }
+            return BadRequest();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete]
-        public IActionResult DeleteAccount([FromBody] string id)
+        public async Task<IActionResult> DeleteAccount()
         {
-            User? user = _dbContext.Users.FirstOrDefault(user => user.Id == id);
-            if (user == null)
-                return NotFound();
-            _dbContext.Users.Remove(user);
-            _dbContext.SaveChanges();
-            return Ok();
+            User? user = await GetUser();
+            if (user != null)
+            {
+                await _userManager.DeleteAsync(user);
+                return Ok();
+            }
+            return NotFound();
+        }
+
+        private async Task<User?> GetUser()
+        {
+            return await _userManager.GetUserAsync(User);
         }
     }
 }

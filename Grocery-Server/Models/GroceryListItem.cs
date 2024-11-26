@@ -10,16 +10,17 @@ public class GroceryListItem
 
     public Guid ItemId { get; set; }
 
-    public short Quantity { get; set; }
+    public ushort Quantity { get; set; }
 
     public virtual GroceryList List { get; set; }
 
     public virtual GroceryItem Item { get; set; }
 
-    public GroceryListItem(Guid listId, Guid itemId)
+    public GroceryListItem(Guid listId, Guid itemId, ushort quantity)
     {
         ListId = listId;
         ItemId = itemId;
+        Quantity = quantity;
     }
     public GroceryListItem() { }
 }

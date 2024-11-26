@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Grocery_Server.Models;
 
 [PrimaryKey(nameof(Id))]
-public class HouseHold
+public class Group
 {
     public Guid Id { get; set; }
 
@@ -19,32 +19,23 @@ public class HouseHold
 
     public virtual User Owner { get; set; }
 
-    // let's hope it understands this is suppposed to be a foreign key
+
     public virtual ICollection<User> Members { get; set; }
-
     public virtual ICollection<GroceryList>? GroceryLists { get; set; }
+    public virtual ICollection<GroceryCategory> CustomCategories { get; set; }
+    public virtual ICollection<GroupInvite> Invites { get; set; }
 
-    public virtual ICollection<GroceryCategory>? CustomCategories { get; set; }
-    public virtual ICollection<HouseHoldInvite>? Invites { get; set; }
 
-    public HouseHold(ControllerModels.NewHouseHoldDTO model)
+    public Group(User creator, string name)
     {
         Id = new();
-        OwnerId = model.UserId;
-        Name = model.Name;
-        CreationTime = DateTime.UtcNow;
-    }
-
-    public HouseHold(User creator, string name)
-    {
-        Id = new();
-        creator.HouseHoldId = Id;
+        creator.GroupId = Id;
         OwnerId = creator.Id;
         CreationTime = DateTime.UtcNow;
         Name = name;
     }
 
-    public HouseHold() { }
+    public Group() { }
 
     public string GetString()
     {

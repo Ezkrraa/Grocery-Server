@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
 using System.Net;
-
+/*
 namespace Grocery_Server.Controllers
 {
     //[Authorize]
@@ -31,36 +31,19 @@ namespace Grocery_Server.Controllers
             return Ok(_dbContext.Users.FirstOrDefault(user => user.Id == strId));
         }
 
-        [HttpGet("get-household")]
-        public IActionResult GetHouseHold([FromQuery] Guid userId)
-        {
-            string strId = userId.ToString();
-            User? user = _dbContext.Users.FirstOrDefault(user => user.Id == strId);
-            if (user == null)
-                return NotFound();
-            _dbContext.Entry(user).Reference(user => user.HouseHold).Load();
-            if (user.HouseHold == null)
-                return NotFound("Household was null");
-            return Ok(user.HouseHold.GetString());
-        }
-
         [HttpGet("get-categories")]
         public IActionResult GetCategories([FromQuery] Guid id)
         {
-            HouseHold? household = _dbContext.HouseHolds.FirstOrDefault(h => h.Id == id);
-            if (household == null)
+            Group? group = _dbContext.Groups.FirstOrDefault(h => h.Id == id);
+            if (group == null)
                 return NotFound();
-            _dbContext.Entry(household).Collection(household => household.CustomCategories).Load();
-            List<CategoryDisplayDTO> categories = household.CustomCategories.Select(cat => new CategoryDisplayDTO(cat)).ToList();
+            List<CategoryDisplayDTO> categories = group.CustomCategories.Select(cat => new CategoryDisplayDTO(cat)).ToList();
             return Ok(categories);
         }
 
         [HttpPost("create-account")]
         public async Task<IActionResult> CreateAccount([FromBody] NewUserDTO newUser)
         {
-            if (!newUser.IsValid())
-                return BadRequest();
-
             if (_dbContext.Users.Any(user => user.NormalizedUserName == newUser.UserName.Normalize() || user.NormalizedEmail == newUser.Email.Normalize()))
                 return Conflict();
 
@@ -69,34 +52,19 @@ namespace Grocery_Server.Controllers
             _dbContext.SaveChanges();
             await _userManager.AddPasswordAsync(user, newUser.Password);
             return Ok(user);
-            //return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         [HttpPost("create-category")]
         public IActionResult CreateCategory([FromBody] NewCategoryDTO newCategory)
         {
             GroceryCategory category = new(newCategory);
-            HouseHold? houseHold = _dbContext.HouseHolds.FirstOrDefault(household => household.Id == newCategory.HouseHoldId);
-            if (houseHold == null) return NotFound();
+            Group? group = _dbContext.Groups.FirstOrDefault(group => group.Id == newCategory.GroupId);
+            if (group == null) return NotFound();
             _dbContext.GroceryCategories.Add(category);
             _dbContext.SaveChanges();
             return Ok();
         }
 
-        [HttpPost("create-household")]
-        public IActionResult CreateHouseHold([FromBody] NewHouseHoldDTO creationModel)
-        {
-            HouseHold houseHold = new(creationModel);
-            User? user = _dbContext.Users.FirstOrDefault(user => user.Id == creationModel.UserId);
-            if (user == null)
-                return BadRequest();
-            if (_dbContext.HouseHolds.Any(house => house.OwnerId == creationModel.UserId))
-                return Conflict(); // can't create new group if already owner of a group
-            _dbContext.HouseHolds.Add(houseHold);
-            user.HouseHoldId = houseHold.Id;
-            _dbContext.SaveChanges();
-            return Ok(houseHold.GetString());
-        }
 
         [HttpPost("create-item")]
         public IActionResult CreateItem([FromBody] NewItemDTO itemDTO)
@@ -115,7 +83,6 @@ namespace Grocery_Server.Controllers
             GroceryCategory? category = _dbContext.GroceryCategories.FirstOrDefault(category => category.Id == id);
             if (category == null)
                 return NotFound();
-            _dbContext.Entry(category).Collection(category => category.Items).Load();
             return Ok(category.Items.Select(item => new ItemDisplayDTO(item)).ToList());
         }
 
@@ -124,5 +91,26 @@ namespace Grocery_Server.Controllers
         {
             return Ok(_dbContext.GroceryItems.Select(item => new ItemDisplayDTO(item)).ToList());
         }
+
+        [HttpGet("get-all-users")]
+        public IActionResult GetAllUsers()
+        {
+            return Ok(_dbContext.Users.Select(user => new UserDisplayDTO(user)));
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpGet("test-session")]
+        public IActionResult TestSession()
+        {
+            return Ok(new UserDisplayDTO(GetUser().Result));
+        }
+
+        private async Task<User> GetUser()
+        {
+            User? user = await _userManager.GetUserAsync(User);
+            return user ?? throw new Exception("No current user found!!");
+        }
     }
 }
+
+ */
