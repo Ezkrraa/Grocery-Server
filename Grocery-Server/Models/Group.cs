@@ -1,7 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Grocery_Server.Models;
 
@@ -23,6 +23,7 @@ public class Group
     public virtual ICollection<GroceryList>? GroceryLists { get; set; }
     public virtual ICollection<GroceryCategory> CustomCategories { get; set; }
     public virtual ICollection<GroupInvite> Invites { get; set; }
+    public virtual ICollection<Recipe> Recipes { get; set; }
 
     public Group(User creator, string name)
     {

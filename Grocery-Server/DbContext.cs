@@ -1,8 +1,8 @@
-using System.Reflection.Metadata;
 using Grocery_Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 
 namespace Grocery_Server;
 
@@ -16,6 +16,8 @@ public class DbContext : IdentityDbContext<User>
     public DbSet<GroceryItem> GroceryItems { get; set; }
     public DbSet<GroceryCategory> GroceryCategories { get; set; }
     public DbSet<GroupInvite> GroupInvites { get; set; }
+    public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<RecipeItem> RecipeItems { get; set; }
 
     public string DbPath { get; }
 
@@ -64,6 +66,13 @@ public class DbContext : IdentityDbContext<User>
             .HasForeignKey(c => c.GroupId)
             .IsRequired(false);
 
+        modelBuilder.Entity<Group>()
+            .HasMany(group => group.Recipes)
+            .WithOne(recipe => recipe.Group)
+            .HasPrincipalKey(g => g.Id)
+            .HasForeignKey(r => r.GroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder
             .Entity<GroceryList>()
             .HasMany(h => h.GroceryListItems)
@@ -100,6 +109,15 @@ public class DbContext : IdentityDbContext<User>
             .WithOne(e => e.Group)
             .HasForeignKey(e => e.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Recipe>()
+            .HasMany(r => r.RecipeItems)
+            .WithOne(ri => ri.Recipe)
+            .HasPrincipalKey(r => r.Id)
+            .HasForeignKey(ri => ri.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<RecipeItem>()
+            .HasOne(ri => ri.Item);
+
 
         base.OnModelCreating(modelBuilder);
     }

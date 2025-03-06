@@ -2,5 +2,5 @@ namespace Grocery_Server.Controllers.GroupController;
 
 public class NewGroupDTO
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
 }

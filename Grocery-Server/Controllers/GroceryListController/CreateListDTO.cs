@@ -2,5 +2,5 @@
 
 public class CreateListDTO
 {
-    public List<AddToListItemDTO> Items { get; set; }
+    public required List<AddToListItemDTO> Items { get; set; }
 }

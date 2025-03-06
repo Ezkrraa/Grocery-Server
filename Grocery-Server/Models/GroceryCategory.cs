@@ -1,7 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Grocery_Server.Models;
 
@@ -16,9 +16,6 @@ public class GroceryCategory
     public virtual Group Group { get; set; }
 
     public virtual ICollection<GroceryItem> Items { get; set; }
-
-    public GroceryCategory(ControllerModels.NewCategoryDTO newCategoryDTO)
-        : this(newCategoryDTO.Name, newCategoryDTO.GroupId) { }
 
     public GroceryCategory(string name, Guid groupId)
     {
