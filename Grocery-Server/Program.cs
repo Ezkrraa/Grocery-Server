@@ -1,3 +1,4 @@
+using System.Text;
 using Grocery_Server.Models;
 using Grocery_Server.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -11,7 +12,6 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Tokens;
 using SwaggerThemes;
-using System.Text;
 
 namespace Grocery_Server
 {
@@ -30,30 +30,36 @@ namespace Grocery_Server
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<DbContext>();
 
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = "Bearer";
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
+            builder
+                .Services.AddAuthentication(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-                };
-            });
+                    options.DefaultAuthenticateScheme = "Bearer";
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+                        ),
+                    };
+                });
 
-            builder.Services.AddIdentity<User, IdentityRole>()
+            builder
+                .Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<DbContext>()
                 .AddUserStore<UserStore<User, IdentityRole, DbContext>>();
 
             builder.Services.AddTransient<JwtService>();
+            builder.Services.AddSingleton<DbCleanupService>();
 
             WebApplication app = builder.Build();
 

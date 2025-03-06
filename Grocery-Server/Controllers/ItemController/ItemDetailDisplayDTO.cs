@@ -1,6 +1,6 @@
 using Grocery_Server.Controllers;
 
-namespace Grocery_Server.ControllerModels;
+namespace Grocery_Server.Controllers.ItemController;
 
 public class ItemDetailDisplayDTO
 {

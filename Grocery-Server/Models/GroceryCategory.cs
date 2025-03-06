@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace Grocery_Server.Models;
 
@@ -25,5 +25,6 @@ public class GroceryCategory
         CategoryName = name;
         GroupId = groupId;
     }
+
     public GroceryCategory() { }
 }

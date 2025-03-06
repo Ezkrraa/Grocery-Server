@@ -1,8 +1,8 @@
+using System.Reflection.Metadata;
 using Grocery_Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 
 namespace Grocery_Server;
 
@@ -26,57 +26,61 @@ public class DbContext : IdentityDbContext<User>
         DbPath = Path.Join(path, "Database.db");
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
-        if (!File.Exists(DbPath))
-            File.Create(DbPath);
+        base.Database.Migrate();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // gli has a composite pk
-        modelBuilder.Entity<GroceryListItem>()
-            .HasKey(gli => new { gli.ItemId, gli.ListId });
+        modelBuilder.Entity<GroceryListItem>().HasKey(gli => new { gli.ItemId, gli.ListId });
         // hhi has a composite pk
-        modelBuilder.Entity<GroupInvite>()
-            .HasKey(invite => new { invite.UserId, invite.GroupId });
+        modelBuilder.Entity<GroupInvite>().HasKey(invite => new { invite.UserId, invite.GroupId });
 
         // specify the Group's owner
-        modelBuilder.Entity<Group>()
+        modelBuilder
+            .Entity<Group>()
             .HasOne(h => h.Owner)
             .WithOne() // skip navigation back
             .HasForeignKey<Group>(h => h.OwnerId)
             .OnDelete(DeleteBehavior.SetNull);
-        modelBuilder.Entity<User>()
+        modelBuilder
+            .Entity<User>()
             .HasOne(u => u.Group)
             .WithMany(h => h.Members)
             .HasForeignKey(u => u.GroupId)
             .OnDelete(DeleteBehavior.SetNull)
             .IsRequired(false);
 
-        modelBuilder.Entity<Group>()
+        modelBuilder
+            .Entity<Group>()
             .HasMany(h => h.GroceryLists)
             .WithOne(gl => gl.Group)
             .HasForeignKey(gl => gl.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Group>()
+        modelBuilder
+            .Entity<Group>()
             .HasMany(h => h.CustomCategories)
             .WithOne(c => c.Group)
             .HasForeignKey(c => c.GroupId)
             .IsRequired(false);
 
-        modelBuilder.Entity<GroceryList>()
+        modelBuilder
+            .Entity<GroceryList>()
             .HasMany(h => h.GroceryListItems)
             .WithOne(gli => gli.List)
             .HasForeignKey(gli => gli.ListId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<GroceryListItem>()
+        modelBuilder
+            .Entity<GroceryListItem>()
             .HasOne(gli => gli.Item)
             .WithMany()
             .HasForeignKey(gli => gli.ItemId)
             .HasPrincipalKey(i => i.Id)
             .OnDelete(DeleteBehavior.NoAction);
 
-        modelBuilder.Entity<GroceryItem>()
+        modelBuilder
+            .Entity<GroceryItem>()
             .HasOne(i => i.Category)
             .WithMany(c => c.Items)
             .HasForeignKey(i => i.CategoryId)
@@ -84,12 +88,14 @@ public class DbContext : IdentityDbContext<User>
             .OnDelete(DeleteBehavior.NoAction);
 
         // delete invite if group or user gets deleted
-        modelBuilder.Entity<User>()
+        modelBuilder
+            .Entity<User>()
             .HasMany(e => e.Invites)
             .WithOne(invite => invite.User)
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Group>()
+        modelBuilder
+            .Entity<Group>()
             .HasMany(e => e.Invites)
             .WithOne(e => e.Group)
             .HasForeignKey(e => e.GroupId)
@@ -99,6 +105,8 @@ public class DbContext : IdentityDbContext<User>
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseLazyLoadingProxies()
-                .UseSqlite($"Data Source={DbPath}");
+    {
+        //options.EnableSensitiveDataLogging();
+        options.UseLazyLoadingProxies().UseSqlite($"Data Source={DbPath}");
+    }
 }

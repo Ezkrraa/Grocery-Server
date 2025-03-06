@@ -1,7 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Grocery_Server.Controllers.ItemController;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace Grocery_Server.Models;
 
@@ -16,7 +17,7 @@ public class GroceryItem
 
     public virtual GroceryCategory Category { get; set; }
 
-    public GroceryItem(ControllerModels.NewItemDTO newItem)
+    public GroceryItem(NewItemDTO newItem)
     {
         Id = new();
         ItemName = newItem.Name;
@@ -24,5 +25,6 @@ public class GroceryItem
         CreationTime = DateTime.UtcNow;
         LastUsed = DateTime.UtcNow;
     }
+
     public GroceryItem() { }
 }

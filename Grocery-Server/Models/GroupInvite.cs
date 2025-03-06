@@ -13,6 +13,7 @@ public class GroupInvite
     public virtual Group Group { get; set; }
 
     public GroupInvite() { }
+
     public GroupInvite(string userId, Guid groupId)
     {
         UserId = userId;
@@ -20,7 +21,6 @@ public class GroupInvite
         CreatedAt = DateTime.UtcNow;
         ExpirationTime = DateTime.UtcNow.AddDays(14);
     }
-
 
     public bool IsExpired()
     {

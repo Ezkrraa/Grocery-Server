@@ -1,16 +1,20 @@
-﻿using Grocery_Server.Models;
+﻿using System.Threading.Tasks;
+using Grocery_Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Threading.Tasks;
 
 public class RequireGroupAttribute : Attribute, IAsyncActionFilter
 {
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(
+        ActionExecutingContext context,
+        ActionExecutionDelegate next
+    )
     {
-        UserManager<User>? userManager = context.HttpContext.RequestServices.GetService(typeof(UserManager<User>)) as UserManager<User>;
-        if (userManager == null)
-            throw new Exception("Cannot get a usermanager apparently");
+        UserManager<User>? userManager =
+            context.HttpContext.RequestServices.GetService(typeof(UserManager<User>))
+                as UserManager<User>
+            ?? throw new Exception("Cannot get a usermanager apparently");
 
         // Get the current user
         User? user = await userManager.GetUserAsync(context.HttpContext.User);

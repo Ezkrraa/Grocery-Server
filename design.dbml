@@ -43,7 +43,7 @@ Table items {
 }
 
 Table groups {
-    id varchar
+    id varchar [pk]
     name varchar
     owner varchar [ref: - users.id]
     creationTime timestamp
@@ -54,4 +54,9 @@ Table invites {
     groupId varchar [ref: > groups.id]
     createdAt timestamp
     expirationTime timestamp
+}
+
+Table recipes {
+    id varchar [ref: <> items.id]
+    groupId varchar [ref: > groups.id]
 }

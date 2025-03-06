@@ -1,3 +1,4 @@
+using Grocery_Server.Controllers.UserController;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,6 @@ namespace Grocery_Server.Models;
 
 public class User : IdentityUser
 {
-
     [Required]
     public DateTime? JoinTime { get; set; }
 
@@ -17,7 +17,7 @@ public class User : IdentityUser
     public virtual Group? Group { get; set; }
     public virtual ICollection<GroupInvite> Invites { get; set; }
 
-    public User(ControllerModels.NewUserDTO dto)
+    public User(NewUserDTO dto)
     {
         JoinTime = DateTime.UtcNow;
         UserName = dto.UserName;

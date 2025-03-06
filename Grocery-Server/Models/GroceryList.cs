@@ -1,3 +1,4 @@
+using Grocery_Server.Controllers.GroceryListController;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Grocery_Server.Models;
@@ -14,7 +15,7 @@ public class GroceryList
 
     public virtual Group Group { get; set; }
 
-    public GroceryList(ControllerModels.CreateListDTO createList, Group group)
+    public GroceryList(CreateListDTO createList, Group group)
     {
         Id = new();
         GroupId = group.Id;

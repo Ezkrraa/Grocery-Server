@@ -1,8 +1,7 @@
-﻿namespace Grocery_Server.ControllerModels;
-
+﻿namespace Grocery_Server.Controllers.Category;
 
 // for renaming an item or category, has an ID and a new name
-public class RenameInfoDTO
+public class RenameCategoryDTO
 {
     public Guid Id { get; set; }
     public string Name { get; set; }

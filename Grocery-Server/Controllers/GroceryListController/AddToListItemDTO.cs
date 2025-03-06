@@ -1,4 +1,4 @@
-﻿namespace Grocery_Server.ControllerModels
+﻿namespace Grocery_Server.Controllers.GroceryListController
 {
     public class AddToListItemDTO
     {

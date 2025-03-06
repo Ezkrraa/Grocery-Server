@@ -1,6 +1,6 @@
-using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.Identity.Client;
 
 namespace Grocery_Server.Models;
 
@@ -22,5 +22,6 @@ public class GroceryListItem
         ItemId = itemId;
         Quantity = quantity;
     }
+
     public GroceryListItem() { }
 }

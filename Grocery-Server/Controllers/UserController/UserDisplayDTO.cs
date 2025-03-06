@@ -1,4 +1,4 @@
-namespace Grocery_Server.ControllerModels;
+namespace Grocery_Server.Controllers.UserController;
 
 public record UserDisplayDTO
 {
@@ -14,5 +14,6 @@ public record UserDisplayDTO
         Email = user.Email;
         GroupId = user.GroupId;
     }
+
     public UserDisplayDTO() { }
 }

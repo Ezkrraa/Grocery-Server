@@ -1,6 +1,6 @@
 using Grocery_Server.Models;
 
-namespace Grocery_Server.ControllerModels;
+namespace Grocery_Server.Controllers.GroupController;
 
 public class NewInviteDTO
 {
@@ -19,10 +19,7 @@ public class NewInviteDTO
         UserId = invite.UserId;
     }
 
-    public NewInviteDTO()
-    {
-
-    }
+    public NewInviteDTO() { }
 
     public GroupInvite GetInvite()
     {
@@ -31,7 +28,7 @@ public class NewInviteDTO
             CreatedAt = DateTime.UtcNow,
             ExpirationTime = DateTime.UtcNow.AddDays(7),
             GroupId = GroupId,
-            UserId = UserId
+            UserId = UserId,
         };
     }
 }
