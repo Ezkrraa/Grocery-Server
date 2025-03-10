@@ -45,7 +45,7 @@ Table items {
 Table groups {
     id varchar [pk]
     name varchar
-    owner varchar [ref: - users.id]
+    owner_id varchar [ref: - users.id]
     creationTime timestamp
 }
 
@@ -57,6 +57,18 @@ Table invites {
 }
 
 Table recipes {
-    id varchar [ref: <> items.id]
+    id varchar [pk]
     groupId varchar [ref: > groups.id]
+    steps varchar
+}
+
+Table recipe_items {
+    recipe_id varchar [ref: > recipes.id]
+    item_id varchar [ref: > items.id]
+}
+
+Table recipe_notes {
+    recipe_id varchar [ref: > recipes.id]
+    note varchar
+    user_id varcahr [ref: > users.id]
 }

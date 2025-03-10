@@ -34,12 +34,8 @@ public class GroupController : ControllerBase
         User? user = await GetCurrentUser();
         if (user == null)
             return Unauthorized();
-        if (user.GroupId == null)
-            return Ok();
-        Group? group = _dbContext.Groups.FirstOrDefault(house => house.Id == user.GroupId);
-        if (group == null)
-            return NotFound();
-        return Ok(new GroupDisplayDTO(group));
+        return user.Group == null ? NotFound("You're not in a group")
+            : Ok(new GroupDisplayDTO(user.Group));
     }
 
     [HttpPost("create")]
@@ -73,20 +69,22 @@ public class GroupController : ControllerBase
     }
 
     [HttpPost("send-invite")]
-    public async Task<IActionResult> SendInvite([FromBody] NewInviteDTO invite)
+    public async Task<IActionResult> SendInvite([FromBody] string invitedId)
     {
-        User? user = await GetCurrentUser();
-        if (user == null)
+        User? inviter = await GetCurrentUser();
+        if (inviter == null || inviter.GroupId == null)
             return Unauthorized();
-        if (user.GroupId != invite.GroupId)
-            return BadRequest();
+        Guid groupId = (Guid)inviter.GroupId;
 
-        User? addressee = _dbContext.Users.FirstOrDefault(user => user.Id == invite.UserId);
-        if (addressee.GroupId == invite.GroupId)
-            return BadRequest("Already a member");
+        User? addressee = _dbContext.Users.FirstOrDefault(user => user.Id == invitedId);
+        if (addressee == null)
+            return NotFound("No such user exists");
+
+        if (addressee.GroupId != null)
+            return BadRequest($"Already a member of group {addressee.Group!.Name}");
 
         GroupInvite? existingInvite = _dbContext.GroupInvites.FirstOrDefault(existingInvite =>
-            existingInvite.GroupId == invite.GroupId && existingInvite.UserId == invite.UserId
+            existingInvite.GroupId == groupId && existingInvite.UserId == invitedId
         );
         if (existingInvite != null)
         {
@@ -95,8 +93,7 @@ public class GroupController : ControllerBase
             else // if existing invite is expired, remove it and continue
                 _dbContext.Remove(existingInvite);
         }
-
-        _dbContext.GroupInvites.Add(invite.GetInvite());
+        _dbContext.GroupInvites.Add(new GroupInvite(invitedId, groupId, inviter.Id));
         _dbContext.SaveChanges();
         return Ok();
     }
@@ -131,8 +128,8 @@ public class GroupController : ControllerBase
         if (user == null)
             return Unauthorized();
 
-        List<NewInviteDTO> invites = user
-            .Invites.Select(invite => new NewInviteDTO(invite)).ToList();
+        List<InviteDisplayDTO> invites = user
+            .Invites.Select(invite => new InviteDisplayDTO(invite)).ToList();
         return Ok(invites);
     }
 
@@ -145,8 +142,8 @@ public class GroupController : ControllerBase
         if (user.Group == null)
             return NotFound();
 
-        List<NewInviteDTO> invites = user
-            .Group.Invites.Select(invite => new NewInviteDTO(invite))
+        List<InviteDisplayDTO> invites = user.Group.Invites
+            .Select(invite => new InviteDisplayDTO(invite))
             .ToList();
         return Ok(invites);
     }
@@ -214,9 +211,33 @@ public class GroupController : ControllerBase
         if (user.Group == null)
             return BadRequest("You are not in a group right now");
 
-        user.Group.Members.Remove(user);
+        Group group = user.Group;
+        group.Members.Remove(user);
+
+        if (group.Members.Count == 0)
+            _dbContext.Remove(group);
+        else
+        {
+            if (group.Owner == user)
+            {
+                group.Owner = group.Members.OrderBy(member => member.JoinTime).First();
+            }
+        }
+
         _dbContext.SaveChanges();
         return Ok();
+    }
+
+    [HttpGet("is-invited/{userId}")]
+    public async Task<IActionResult> IsInvited(string userId)
+    {
+        User? inviter = await GetCurrentUser();
+        if (inviter == null || inviter.GroupId == null)
+            return Unauthorized();
+        Group? group = inviter.Group;
+        if (group == null)
+            throw new Exception("GroupId was not null but Group was????");
+        return Ok(group.Invites.Any(invite => invite.UserId == userId));
     }
 
     private async Task<User?> GetCurrentUser()

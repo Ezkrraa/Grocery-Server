@@ -14,7 +14,7 @@ public record GroupDisplayDTO
         Id = group.Id;
         Members = group.Members.Select(member => new UserDisplayDTO(member));
         CreatedAt = group.CreationTime;
-        Owner = group.Owner.ToString();
+        Owner = group.Owner.UserName ?? group.Owner.ToString();
     }
 
     public GroupDisplayDTO() { }

@@ -10,7 +10,7 @@ namespace Grocery_Server.Models;
 public class User : IdentityUser
 {
     [Required]
-    public DateTime? JoinTime { get; set; }
+    public DateTime JoinTime { get; set; }
 
     public Guid? GroupId { get; set; }
 

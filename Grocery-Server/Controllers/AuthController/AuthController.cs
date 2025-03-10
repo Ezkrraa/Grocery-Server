@@ -38,6 +38,8 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginDTO model)
     {
         User? user = await _userManager.FindByNameAsync(model.UserName);
+        user ??= await _userManager.FindByEmailAsync(model.UserName);
+
         if (user == null)
             return NotFound();
         Microsoft.AspNetCore.Identity.SignInResult result =
@@ -70,7 +72,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [HttpPost("check-token")]
+    [HttpGet("check-token")]
     public IActionResult CheckToken()
     {
         return Ok();

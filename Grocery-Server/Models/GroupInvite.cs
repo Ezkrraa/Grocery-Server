@@ -6,6 +6,7 @@ public class GroupInvite
 {
     public Guid GroupId { get; set; }
     public string UserId { get; set; }
+    public string InvitedBy { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime ExpirationTime { get; set; }
 
@@ -14,12 +15,13 @@ public class GroupInvite
 
     public GroupInvite() { }
 
-    public GroupInvite(string userId, Guid groupId)
+    public GroupInvite(string userId, Guid groupId, string invitedBy)
     {
         UserId = userId;
         GroupId = groupId;
         CreatedAt = DateTime.UtcNow;
         ExpirationTime = DateTime.UtcNow.AddDays(14);
+        InvitedBy = invitedBy;
     }
 
     public bool IsExpired()

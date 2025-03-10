@@ -1,17 +1,11 @@
-using System.Text;
 using Grocery_Server.Models;
 using Grocery_Server.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Proxies;
-using Microsoft.Identity.Abstractions;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Tokens;
 using SwaggerThemes;
+using System.Text;
 
 namespace Grocery_Server
 {
@@ -71,7 +65,7 @@ namespace Grocery_Server
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace Grocery_Server.Controllers.UserController;
 
@@ -24,12 +23,22 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public IActionResult GetInfo([FromQuery] Guid id)
+    public async Task<IActionResult> GetMyInfo()
     {
-        User? user = _dbContext.Users.FirstOrDefault(user => user.Id == id.ToString());
-        if (user != null)
-            return Ok(new UserDisplayDTO(user));
-        return NotFound();
+        User? user = await GetUser();
+        if (user == null)
+            throw new Exception("GetUser failed");
+        return Ok(new UserDisplayDTO(user));
+    }
+
+    [HttpGet("{query}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public IActionResult GetInfoByName(string query)
+    {
+        IEnumerable<User>? users = _dbContext.Users.Where(user => user.UserName.Contains(query));
+        if (users != null)
+            return Ok(users.Select(user => new UserDisplayDTO(user)));
+        return NotFound("No such user");
     }
 
     [HttpPost("create")]
@@ -40,12 +49,23 @@ public class UserController : ControllerBase
             && await _userManager.FindByNameAsync(newUser.UserName) == null
         )
         {
+            foreach (IPasswordValidator<User> validator in _userManager.PasswordValidators)
+            {
+                IdentityResult result = await validator.ValidateAsync(_userManager, null, newUser.Password);
+                if (!result.Succeeded)
+                    return BadRequest(result.Errors.First().Description);
+            }
             User user = new(newUser);
-            await _userManager.CreateAsync(user);
-            await _userManager.AddPasswordAsync(user, newUser.Password);
+            IdentityResult createResult = await _userManager.CreateAsync(user);
+            if (!createResult.Succeeded)
+                return BadRequest(createResult.Errors.First());
+            IdentityResult passwordResult = await _userManager.AddPasswordAsync(user, newUser.Password);
+
+            if (!passwordResult.Succeeded)
+                return BadRequest(createResult.Errors.First());
             return Ok();
         }
-        return BadRequest();
+        return BadRequest("User already exists");
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
