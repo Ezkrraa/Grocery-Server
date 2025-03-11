@@ -12,6 +12,6 @@ public class GroceryListDisplayDTO
     {
         ListId = list.Id;
         CreatedTime = list.CreationTime;
-        ItemsCount = list.GroceryListItems.Count;
+        ItemsCount = list.GroceryListItems?.Count ?? 0;
     }
 }

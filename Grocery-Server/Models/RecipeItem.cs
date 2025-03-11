@@ -12,5 +12,14 @@ namespace Grocery_Server.Models
 
         public virtual Recipe? Recipe { get; }
         public virtual GroceryItem? Item { get; }
+
+        public RecipeItem(Guid recipeId, Guid itemId, int quantity)
+        {
+            RecipeId = recipeId;
+            ItemId = itemId;
+            Quantity = quantity;
+        }
+
+        public RecipeItem() { }
     }
 }

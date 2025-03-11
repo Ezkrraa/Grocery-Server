@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Grocery_Server.Migrations
 {
     [DbContext(typeof(DbContext))]
-    [Migration("20250306112441_Recipes")]
-    partial class Recipes
+    [Migration("20250311205031_fixMigrations")]
+    partial class fixMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,6 +146,10 @@ namespace Grocery_Server.Migrations
                     b.Property<DateTime>("ExpirationTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("InvitedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("UserId", "GroupId");
 
                     b.HasIndex("GroupId");
@@ -213,8 +217,7 @@ namespace Grocery_Server.Migrations
                     b.Property<Guid?>("GroupId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("JoinTime")
-                        .IsRequired()
+                    b.Property<DateTime>("JoinTime")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")

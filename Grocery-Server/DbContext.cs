@@ -28,7 +28,7 @@ public class DbContext : IdentityDbContext<User>
         DbPath = Path.Join(path, "Database.db");
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
-        base.Database.Migrate();
+        //base.Database.Migrate();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

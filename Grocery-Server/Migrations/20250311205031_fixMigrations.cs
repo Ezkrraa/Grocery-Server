@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Grocery_Server.Migrations
 {
     /// <inheritdoc />
-    public partial class redoMigrationsNow : Migration
+    public partial class fixMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -203,6 +203,7 @@ namespace Grocery_Server.Migrations
                 {
                     GroupId = table.Column<Guid>(type: "TEXT", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    InvitedBy = table.Column<string>(type: "TEXT", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ExpirationTime = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -217,6 +218,25 @@ namespace Grocery_Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_GroupInvites_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Recipes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    GroupId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Recipes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Recipes_Groups_GroupId",
                         column: x => x.GroupId,
                         principalTable: "Groups",
                         principalColumn: "Id",
@@ -263,6 +283,31 @@ namespace Grocery_Server.Migrations
                         name: "FK_GroceryListItems_GroceryLists_ListId",
                         column: x => x.ListId,
                         principalTable: "GroceryLists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RecipeItems",
+                columns: table => new
+                {
+                    RecipeId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ItemId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecipeItems", x => new { x.RecipeId, x.ItemId });
+                    table.ForeignKey(
+                        name: "FK_RecipeItems_GroceryItems_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "GroceryItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RecipeItems_Recipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "Recipes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -340,6 +385,16 @@ namespace Grocery_Server.Migrations
                 column: "OwnerId",
                 unique: true);
 
+            migrationBuilder.CreateIndex(
+                name: "IX_RecipeItems_ItemId",
+                table: "RecipeItems",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Recipes_GroupId",
+                table: "Recipes",
+                column: "GroupId");
+
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                 table: "AspNetUserClaims",
@@ -402,13 +457,19 @@ namespace Grocery_Server.Migrations
                 name: "GroupInvites");
 
             migrationBuilder.DropTable(
+                name: "RecipeItems");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "GroceryLists");
 
             migrationBuilder.DropTable(
                 name: "GroceryItems");
 
             migrationBuilder.DropTable(
-                name: "GroceryLists");
+                name: "Recipes");
 
             migrationBuilder.DropTable(
                 name: "GroceryCategories");

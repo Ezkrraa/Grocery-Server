@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Grocery_Server.Controllers.GroceryListController;
 
 [ApiController]
-[Route("api/grocery-list-controller")]
+[Route("api/grocery-list")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [RequireGroup]
 public class GroceryListController : ControllerBase
@@ -22,24 +22,25 @@ public class GroceryListController : ControllerBase
         _userManager = userManager;
     }
 
-    [HttpGet("get-list")]
-    public async Task<IActionResult> GetList([FromQuery] Guid id)
+    [HttpGet("get-list/{id}")]
+    public async Task<IActionResult> GetList(Guid id)
     {
         User user = await GetCurrentUser();
 
-        Models.GroceryList? list = user.Group.GroceryLists.FirstOrDefault(list =>
+        Models.GroceryList? list = user.Group?.GroceryLists?.FirstOrDefault(list =>
             list.Id == id
         );
 
         if (list == null || user.GroupId != list.GroupId)
             return NotFound();
-        List<GroceryListItem> items = list.GroceryListItems.ToList();
+        List<GroceryListItem> items = list.GroceryListItems?.ToList();
         return Ok(
-            list.GroceryListItems.Select(item => new ListItemDisplayDTO(
+            list.GroceryListItems?.Select(item => new ListItemDisplayDTO(
                 item.ItemId,
                 item.Item.ItemName,
                 item.Quantity,
-                item.Item.CategoryId
+                item.Item.CategoryId,
+                item.Item.Category.CategoryName
             ))
         );
     }
@@ -79,8 +80,8 @@ public class GroceryListController : ControllerBase
         return Ok(group.GroceryLists?.Select(list => new GroceryListDisplayDTO(list)));
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteList([FromBody] Guid id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteList(Guid id)
     {
         User user = await GetCurrentUser();
         Group group = GetGroup(user);
