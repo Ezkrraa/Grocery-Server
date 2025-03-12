@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Grocery_Server.Controllers.GroceryListController;
 
 [ApiController]
 [Route("api/grocery-list")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[EnableRateLimiting(nameof(RateLimiters.Fast))]
 [RequireGroup]
 public class GroceryListController : ControllerBase
 {
@@ -45,6 +47,7 @@ public class GroceryListController : ControllerBase
         );
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPost("create-list")]
     public async Task<IActionResult> CreateList([FromBody] CreateListDTO itemsList)
     {
@@ -80,6 +83,7 @@ public class GroceryListController : ControllerBase
         return Ok(group.GroceryLists?.Select(list => new GroceryListDisplayDTO(list)));
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteList(Guid id)
     {

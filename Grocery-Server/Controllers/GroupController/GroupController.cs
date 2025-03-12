@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.Reflection.Metadata.Ecma335;
@@ -11,6 +12,7 @@ using System.Reflection.Metadata.Ecma335;
 namespace Grocery_Server.Controllers.GroupController;
 
 [ApiController]
+[EnableRateLimiting(nameof(RateLimiters.Fast))]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/group")]
 public class GroupController : ControllerBase
@@ -38,6 +40,7 @@ public class GroupController : ControllerBase
             : Ok(new GroupDisplayDTO(user.Group));
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPost("create")]
     public async Task<IActionResult> CreateGroup([FromBody] NewGroupDTO creationModel)
     {
@@ -57,6 +60,7 @@ public class GroupController : ControllerBase
         return Ok(group.GetString());
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpDelete]
     public IActionResult DeleteGroup([FromQuery] Guid id)
     {
@@ -68,6 +72,7 @@ public class GroupController : ControllerBase
         return Ok();
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPost("send-invite")]
     public async Task<IActionResult> SendInvite([FromBody] string invitedId)
     {
@@ -98,6 +103,7 @@ public class GroupController : ControllerBase
         return Ok();
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPatch("retract-invite")]
     public async Task<IActionResult> RetractInvite([FromBody] NewInviteDTO invite)
     {
@@ -148,6 +154,7 @@ public class GroupController : ControllerBase
         return Ok(invites);
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPost("accept-invite")]
     public async Task<IActionResult> AcceptInvite([FromBody] NewInviteDTO invite)
     {
@@ -178,6 +185,7 @@ public class GroupController : ControllerBase
         return Ok();
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPost("deny-invite")]
     public async Task<IActionResult> DenyInvite([FromBody] NewInviteDTO invite)
     {
@@ -200,6 +208,7 @@ public class GroupController : ControllerBase
         return Ok();
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPost("leave")]
     public async Task<IActionResult> LeaveGroup()
     {
@@ -228,6 +237,7 @@ public class GroupController : ControllerBase
         return Ok();
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpGet("is-invited/{userId}")]
     public async Task<IActionResult> IsInvited(string userId)
     {

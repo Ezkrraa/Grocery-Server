@@ -5,10 +5,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Grocery_Server.Controllers.UserController;
 
 [ApiController]
+[EnableRateLimiting(nameof(RateLimiters.Fast))]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/user")]
 public class UserController : ControllerBase
 {
@@ -22,7 +25,6 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> GetMyInfo()
     {
         User? user = await GetUser();
@@ -32,7 +34,6 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{query}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public IActionResult GetInfoByName(string query)
     {
         IEnumerable<User>? users = _dbContext.Users.Where(user => user.UserName.Contains(query));
@@ -41,34 +42,6 @@ public class UserController : ControllerBase
         return NotFound("No such user");
     }
 
-    [HttpPost("create")]
-    public async Task<IActionResult> CreateAccount([FromBody] NewUserDTO newUser)
-    {
-        if (
-            await _userManager.FindByEmailAsync(newUser.Email) == null
-            && await _userManager.FindByNameAsync(newUser.UserName) == null
-        )
-        {
-            foreach (IPasswordValidator<User> validator in _userManager.PasswordValidators)
-            {
-                IdentityResult result = await validator.ValidateAsync(_userManager, null, newUser.Password);
-                if (!result.Succeeded)
-                    return BadRequest(result.Errors.First().Description);
-            }
-            User user = new(newUser);
-            IdentityResult createResult = await _userManager.CreateAsync(user);
-            if (!createResult.Succeeded)
-                return BadRequest(createResult.Errors.First());
-            IdentityResult passwordResult = await _userManager.AddPasswordAsync(user, newUser.Password);
-
-            if (!passwordResult.Succeeded)
-                return BadRequest(createResult.Errors.First());
-            return Ok();
-        }
-        return BadRequest("User already exists");
-    }
-
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete]
     public async Task<IActionResult> DeleteAccount()
     {

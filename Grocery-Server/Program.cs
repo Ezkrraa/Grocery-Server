@@ -3,12 +3,20 @@ using Grocery_Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using SwaggerThemes;
 using System.Text;
 
+
 namespace Grocery_Server
 {
+    public enum RateLimiters
+    {
+        ReallySlow,
+        Slow,
+        Fast,
+    }
     public class Program
     {
         public static void Main(string[] args)
@@ -55,6 +63,35 @@ namespace Grocery_Server
             builder.Services.AddTransient<JwtService>();
             builder.Services.AddSingleton<DbCleanupService>();
 
+
+            builder.Services.AddRateLimiter(options =>
+            options.AddFixedWindowLimiter(
+                policyName: nameof(RateLimiters.ReallySlow),
+                settings =>
+            {
+                settings.PermitLimit = 10;
+                settings.Window = TimeSpan.FromMinutes(30);
+            }));
+
+            builder.Services.AddRateLimiter(options =>
+            options.AddFixedWindowLimiter(
+                policyName: nameof(RateLimiters.Slow),
+                settings =>
+            {
+                settings.PermitLimit = 15;
+                settings.Window = TimeSpan.FromMinutes(10);
+            }));
+
+            builder.Services.AddRateLimiter(options =>
+            options.AddFixedWindowLimiter(
+                policyName: nameof(RateLimiters.Fast),
+                settings =>
+            {
+                settings.PermitLimit = 10;
+                settings.Window = TimeSpan.FromSeconds(30);
+            }));
+
+
             WebApplication app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -66,7 +103,7 @@ namespace Grocery_Server
             }
 
             //app.UseHttpsRedirection();
-
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAuthorization();
 

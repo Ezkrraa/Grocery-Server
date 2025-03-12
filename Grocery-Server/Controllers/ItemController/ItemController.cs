@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Grocery_Server.Controllers.ItemController;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/item")]
+[EnableRateLimiting(nameof(RateLimiters.Fast))]
 [RequireGroup]
 public class ItemController : ControllerBase
 {
@@ -63,7 +65,7 @@ public class ItemController : ControllerBase
         if (foundItem == null)
             return NotFound();
         if (foundItem.Category.Group != group) // act like item does not exist if unowned
-            return Ok();
+            return NotFound();
         return Ok(new ItemDetailDisplayDTO(foundItem));
     }
 
@@ -81,6 +83,7 @@ public class ItemController : ControllerBase
         return Ok(new CategoryListDTO(category));
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPatch("rename")]
     public IActionResult RenameItem([FromBody] RenameCategoryDTO renamedItem)
     {
@@ -94,6 +97,7 @@ public class ItemController : ControllerBase
         return Ok(new ItemDetailDisplayDTO(toRenameItem));
     }
 
+    [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpDelete("delete")]
     public async Task<IActionResult> DeleteItem([FromQuery] Guid id)
     {
