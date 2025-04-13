@@ -49,14 +49,14 @@ public class GroceryListController : ControllerBase
 
     [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPost("create-list")]
-    public async Task<IActionResult> CreateList([FromBody] CreateListDTO itemsList)
+    public async Task<IActionResult> CreateList([FromBody] List<CreateListItemDTO> itemsList)
     {
         User user = await GetCurrentUser();
 
-        Grocery_Server.Models.GroceryList newList = new(itemsList, user.Group);
+        GroceryList newList = new(user.Group);
 
         if (
-            !itemsList.Items.All(item =>
+            !itemsList.All(item =>
                 _dbContext.GroceryItems.Any(existingItem =>
                     existingItem.Id == item.ItemId
                     && existingItem.Category.GroupId == user.GroupId
@@ -68,7 +68,7 @@ public class GroceryListController : ControllerBase
         _dbContext.GroceryLists.Add(newList);
 
         newList.GroceryListItems = itemsList
-            .Items.Select(item => new GroceryListItem(newList.Id, item.ItemId, item.Quantity))
+            .Select(item => new GroceryListItem(newList.Id, item.ItemId, item.Quantity))
             .ToList();
         _dbContext.SaveChanges();
         return Ok();

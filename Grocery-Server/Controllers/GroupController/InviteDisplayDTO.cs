@@ -16,7 +16,7 @@ public class InviteDisplayDTO
     {
         GroupId = invite.GroupId;
         UserId = invite.UserId;
-        UserName = invite.User.UserName ?? "";
+        UserName = invite.User?.UserName ?? "";
         GroupName = invite.Group.Name;
         CreatedAt = invite.CreatedAt;
         ExpiresAt = invite.ExpirationTime;

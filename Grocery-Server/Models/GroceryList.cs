@@ -15,7 +15,7 @@ public class GroceryList
 
     public virtual Group Group { get; set; }
 
-    public GroceryList(CreateListDTO createList, Group group)
+    public GroceryList(Group group)
     {
         Id = new();
         GroupId = group.Id;

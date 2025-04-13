@@ -72,3 +72,16 @@ Table recipe_notes {
     note varchar
     user_id varcahr [ref: > users.id]
 }
+
+Table recipe_pictures {
+    recipe_id varchar [ref: > recipes.id]
+    picture_id varchar
+    picture_name varchar
+    taken_at datetime
+}
+
+Table profile_pictures {
+    picture_id varchar [pk]
+    picture_name varchar
+    taken_at datetime
+}

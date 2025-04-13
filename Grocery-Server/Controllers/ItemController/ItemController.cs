@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.IdentityModel.Tokens;
+using System;
 
 namespace Grocery_Server.Controllers.ItemController;
 
@@ -27,6 +29,9 @@ public class ItemController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateItem([FromBody] NewItemDTO itemDTO)
     {
+        if (itemDTO.Name.Trim().IsNullOrEmpty())
+            return BadRequest();
+
         User user = await GetCurrentUser();
         Group group = GetGroup(user);
 
@@ -40,9 +45,11 @@ public class ItemController : ControllerBase
             return Conflict("Item already exists in category");
 
         GroceryItem newItem = new(itemDTO);
+        newItem.ItemName = newItem.ItemName.Trim().ToLower();
+        newItem.ItemName = char.ToUpper(newItem.ItemName[0]) + newItem.ItemName[1..];
         _dbContext.GroceryItems.Add(newItem);
         _dbContext.SaveChanges();
-        return Ok(new ItemDetailDisplayDTO(newItem));
+        return Ok(newItem.Id);
     }
 
     [HttpGet("by-group")]

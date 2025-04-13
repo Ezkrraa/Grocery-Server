@@ -88,7 +88,7 @@ namespace Grocery_Server
                 settings =>
             {
                 settings.PermitLimit = 10;
-                settings.Window = TimeSpan.FromSeconds(30);
+                settings.Window = TimeSpan.FromSeconds(20);
             }));
 
 
