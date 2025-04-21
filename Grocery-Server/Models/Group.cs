@@ -1,7 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Grocery_Server.Models;
@@ -11,15 +8,14 @@ public class Group
 {
     public Guid Id { get; set; }
 
-    [Required]
-    public string OwnerId { get; set; }
+    public string? OwnerId { get; set; }
 
     public string Name { get; set; }
 
     public DateTime CreationTime { get; set; }
 
     [AllowNull]
-    public virtual User Owner { get; set; }
+    public virtual User? Owner { get; set; }
 
     [AllowNull]
     public virtual ICollection<User> Members { get; set; }

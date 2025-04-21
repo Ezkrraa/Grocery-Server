@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using System.Transactions;
 
 namespace Grocery_Server.Controllers.UserController;
 
@@ -18,12 +18,14 @@ namespace Grocery_Server.Controllers.UserController;
 [Route("api/user")]
 public class UserController : ControllerBase
 {
+    private readonly ILogger<UserController> _logger;
     private readonly DbContext _dbContext;
     private readonly UserManager<User> _userManager;
     private readonly ImageStorageService _imageStorageService;
 
-    public UserController([FromServices] DbContext dbContext, UserManager<User> userManager, ImageStorageService imageStorageService)
+    public UserController([FromServices] ILogger<UserController> logger, DbContext dbContext, UserManager<User> userManager, ImageStorageService imageStorageService)
     {
+        _logger = logger;
         _dbContext = dbContext;
         _userManager = userManager;
         _imageStorageService = imageStorageService;
@@ -34,11 +36,7 @@ public class UserController : ControllerBase
     {
         User? user = await GetUser();
         if (user == null)
-            return Unauthorized(
-#if DEBUG
-                JsonSerializer.Serialize(User)
-#endif
-        );
+            return Unauthorized();
 
         return Ok(new UserDisplayDTO(user));
     }
@@ -63,7 +61,26 @@ public class UserController : ControllerBase
         User? user = await GetUser();
         if (user != null)
         {
-            await _userManager.DeleteAsync(user);
+            if (user.Group != null && user.Group.Owner == user)
+            {
+                if (user.Group.Members.Count >= 2)
+                {
+                    // assign a new owner
+                    user.Group.Owner = user.Group.Members.First(groupUser => groupUser.Id != user.Id);
+                    _dbContext.Update(user.Group);
+                }
+                else
+                {
+                    // delete group
+                    user.Group.Owner = null;
+                    _dbContext.Update(user.Group);
+                    _dbContext.SaveChanges();
+                    _dbContext.Remove(user.Group);
+                    _dbContext.SaveChanges();
+                }
+            }
+            _dbContext.Remove(user);
+            _dbContext.SaveChanges();
             return Ok();
         }
         return NotFound();

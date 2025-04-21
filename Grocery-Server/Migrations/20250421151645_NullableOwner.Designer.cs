@@ -3,6 +3,7 @@ using System;
 using Grocery_Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Grocery_Server.Migrations
 {
     [DbContext(typeof(DbContext))]
-    partial class DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250421151645_NullableOwner")]
+    partial class NullableOwner
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,6 +121,7 @@ namespace Grocery_Server.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("OwnerId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -492,7 +496,8 @@ namespace Grocery_Server.Migrations
                     b.HasOne("Grocery_Server.Models.User", "Owner")
                         .WithOne()
                         .HasForeignKey("Grocery_Server.Models.Group", "OwnerId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Owner");
                 });

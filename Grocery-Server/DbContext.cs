@@ -44,7 +44,7 @@ public class DbContext : IdentityDbContext<User>
             .HasOne(h => h.Owner)
             .WithOne() // skip navigation back
             .HasForeignKey<Group>(h => h.OwnerId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
         modelBuilder
             .Entity<User>()
             .HasOne(u => u.Group)
@@ -64,6 +64,7 @@ public class DbContext : IdentityDbContext<User>
             .HasMany(h => h.CustomCategories)
             .WithOne(c => c.Group)
             .HasForeignKey(c => c.GroupId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired(false);
 
         modelBuilder.Entity<Group>()

@@ -89,8 +89,8 @@ public class AuthController : ControllerBase
             return BadRequest($"Invalid picture type: '{newUser.ProfilePicture.ContentType}'");
 
         if (
-            await _userManager.FindByEmailAsync(newUser.Email) != null
-            || await _userManager.FindByNameAsync(newUser.UserName) != null
+            await _userManager.FindByEmailAsync(newUser.Email) == null
+            && await _userManager.FindByNameAsync(newUser.UserName) == null
         )
             return BadRequest("User already exists");
         if (!_imageStorageService.IsValidProfilePicture(newUser.ProfilePicture))
@@ -121,8 +121,8 @@ public class AuthController : ControllerBase
     [EnableRateLimiting(nameof(RateLimiters.Fast))]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet("check-token")]
-    public IActionResult CheckToken()
+    public async Task<IActionResult> CheckToken()
     {
-        return Ok();
+        return await _userManager.GetUserAsync(User) != null ? Ok() : Unauthorized();
     }
 }
