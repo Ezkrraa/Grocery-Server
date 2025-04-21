@@ -17,7 +17,7 @@ public record UserDisplayDTO
         Name = user.UserName;
         JoinedAt = user.JoinTime;
         IsInGroup = user.GroupId != null;
-        ProfilePictureName = user.ProfilePicture.FileName;
+        ProfilePictureName = user.ProfilePicture?.FileName ?? "";
     }
 
     public UserDisplayDTO() { }
