@@ -1,5 +1,6 @@
 using Grocery_Server.Controllers.GroceryListController;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Grocery_Server.Models;
 
@@ -11,8 +12,10 @@ public class GroceryList
 
     public DateTime CreationTime { get; set; }
 
+    [AllowNull]
     public virtual ICollection<GroceryListItem>? GroceryListItems { get; set; }
 
+    [AllowNull]
     public virtual Group Group { get; set; }
 
     public GroceryList(Group group)

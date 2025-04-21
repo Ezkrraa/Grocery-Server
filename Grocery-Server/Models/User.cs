@@ -13,9 +13,11 @@ public class User : IdentityUser
 
     public Guid? GroupId { get; set; }
 
+    [AllowNull]
     public virtual Group? Group { get; set; }
     [AllowNull]
     public virtual ICollection<GroupInvite> Invites { get; set; }
+    [AllowNull]
     public virtual ProfilePicture? ProfilePicture { get; set; }
 
     public User(NewUserDTO dto)
