@@ -64,6 +64,8 @@ public class ImageStorageService
 
         ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg) ?? throw new Exception("Couldn't find JPEG decoder");
 
+        if (!Directory.Exists(userFilesPath))
+            Directory.CreateDirectory(userFilesPath);
         using (FileStream stream = new(fullPath, FileMode.OpenOrCreate))
         {
             image.Save(stream, jpgEncoder, parameters);
