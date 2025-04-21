@@ -1,4 +1,4 @@
-﻿namespace Grocery_Server.Controllers.Auth;
+﻿namespace Grocery_Server.Controllers.AuthController;
 
 public class LoginDTO
 {

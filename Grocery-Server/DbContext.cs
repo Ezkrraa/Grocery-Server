@@ -1,8 +1,6 @@
 using Grocery_Server.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 
 namespace Grocery_Server;
 
@@ -18,6 +16,8 @@ public class DbContext : IdentityDbContext<User>
     public DbSet<GroupInvite> GroupInvites { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<RecipeItem> RecipeItems { get; set; }
+    public DbSet<RecipePicture> RecipePictures { get; set; }
+    public DbSet<ProfilePicture> ProfilePictures { get; set; }
 
     public string DbPath { get; }
 
@@ -112,11 +112,26 @@ public class DbContext : IdentityDbContext<User>
         modelBuilder.Entity<Recipe>()
             .HasMany(r => r.RecipeItems)
             .WithOne(ri => ri.Recipe)
-            .HasPrincipalKey(r => r.Id)
-            .HasForeignKey(ri => ri.RecipeId)
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<RecipeItem>()
-            .HasOne(ri => ri.Item);
+
+        modelBuilder.Entity<GroceryItem>()
+            .HasMany(gi => gi.RecipeItems)
+            .WithOne(ri => ri.Item)
+            .HasPrincipalKey(gi => gi.Id)
+            .HasForeignKey(ri => ri.ItemId);
+
+        modelBuilder.Entity<Recipe>()
+            .HasMany(r => r.RecipePictures)
+            .WithOne(rp => rp.Recipe)
+            .OnDelete(DeleteBehavior.Cascade)
+            .HasPrincipalKey(r => r.Id)
+            .HasForeignKey(rp => rp.RecipeId);
+
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.ProfilePicture)
+            .WithOne(pfp => pfp.User)
+            .OnDelete(DeleteBehavior.Cascade);
+
 
 
         base.OnModelCreating(modelBuilder);

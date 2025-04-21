@@ -1,9 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.Identity.Client;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Grocery_Server.Models;
 
+[PrimaryKey(nameof(ListId), nameof(ItemId))]
 public class GroceryListItem
 {
     public Guid ListId { get; set; }
@@ -12,8 +12,10 @@ public class GroceryListItem
 
     public ushort Quantity { get; set; }
 
+    [AllowNull]
     public virtual GroceryList List { get; set; }
 
+    [AllowNull]
     public virtual GroceryItem Item { get; set; }
 
     public GroceryListItem(Guid listId, Guid itemId, ushort quantity)

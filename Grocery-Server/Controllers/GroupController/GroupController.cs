@@ -1,13 +1,11 @@
 ﻿//using Grocery_Server.ControllerModels;
 using Grocery_Server.Models;
+using Grocery_Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Grocery_Server.Controllers.GroupController;
 
@@ -19,11 +17,12 @@ public class GroupController : ControllerBase
 {
     private readonly DbContext _dbContext;
     private readonly UserManager<User> _userManager;
-
-    public GroupController(DbContext dbContext, UserManager<User> userManager)
+    private readonly ImageStorageService _imageStorageService;
+    public GroupController(DbContext dbContext, UserManager<User> userManager, ImageStorageService imageStorageService)
     {
         _dbContext = dbContext;
         _userManager = userManager;
+        _imageStorageService = imageStorageService;
     }
 
     /// <summary>
@@ -37,7 +36,7 @@ public class GroupController : ControllerBase
         if (user == null)
             return Unauthorized();
         return user.Group == null ? NotFound("You're not in a group")
-            : Ok(new GroupDisplayDTO(user.Group));
+            : Ok(new GroupDisplayDTO(user.Group, _imageStorageService));
     }
 
     [EnableRateLimiting(nameof(RateLimiters.Slow))]
@@ -233,6 +232,7 @@ public class GroupController : ControllerBase
             }
         }
 
+        // TODO: fix crash that happens here
         _dbContext.SaveChanges();
         return Ok();
     }

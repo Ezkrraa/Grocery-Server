@@ -1,16 +1,12 @@
-﻿//using Grocery_Server.ControllerModels;
-using Grocery_Server.Controllers.UserController;
-using Grocery_Server.Models;
+﻿using Grocery_Server.Models;
 using Grocery_Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
-namespace Grocery_Server.Controllers.Auth;
+namespace Grocery_Server.Controllers.AuthController;
 
 [ApiController]
 [Route("api/auth")]
@@ -19,18 +15,26 @@ public class AuthController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly JwtService _jwtService;
     private readonly SignInManager<User> _signInManager;
+    private readonly ImageStorageService _imageStorageService;
+    private readonly DbContext _dbContext;
     private readonly IConfiguration _config;
+
+    private static readonly string[] validImageFileExtension = new string[] { "image/png", "image/jpeg", "image/jpg" };
 
     public AuthController(
         UserManager<User> userManager,
         JwtService jwtService,
         SignInManager<User> signInManager,
+        ImageStorageService imageStorageService,
+        DbContext dbContext,
         IConfiguration config
     )
     {
         _userManager = userManager;
         _jwtService = jwtService;
         _signInManager = signInManager;
+        _imageStorageService = imageStorageService;
+        _dbContext = dbContext;
         _config = config;
     }
 
@@ -77,30 +81,41 @@ public class AuthController : ControllerBase
 
     [EnableRateLimiting(nameof(RateLimiters.ReallySlow))]
     [HttpPost("create")]
-    public async Task<IActionResult> CreateAccount([FromBody] NewUserDTO newUser)
+    public async Task<IActionResult> CreateAccount([FromForm] NewUserDTO newUser)
     {
-        if (
-            await _userManager.FindByEmailAsync(newUser.Email) == null
-            && await _userManager.FindByNameAsync(newUser.UserName) == null
-        )
-        {
-            foreach (IPasswordValidator<User> validator in _userManager.PasswordValidators)
-            {
-                IdentityResult result = await validator.ValidateAsync(_userManager, null, newUser.Password);
-                if (!result.Succeeded)
-                    return BadRequest(result.Errors.First().Description);
-            }
-            User user = new(newUser);
-            IdentityResult createResult = await _userManager.CreateAsync(user);
-            if (!createResult.Succeeded)
-                return BadRequest(createResult.Errors.First());
-            IdentityResult passwordResult = await _userManager.AddPasswordAsync(user, newUser.Password);
+        if (newUser.ProfilePicture == null)
+            return BadRequest("Invalid picture");
+        else if (!validImageFileExtension.Any(imageExtension => newUser.ProfilePicture.ContentType == imageExtension))
+            return BadRequest($"Invalid picture type: '{newUser.ProfilePicture.ContentType}'");
 
-            if (!passwordResult.Succeeded)
-                return BadRequest(createResult.Errors.First());
-            return Ok();
+        if (
+            await _userManager.FindByEmailAsync(newUser.Email) != null
+            || await _userManager.FindByNameAsync(newUser.UserName) != null
+        )
+            return BadRequest("User already exists");
+        if (!_imageStorageService.IsValidProfilePicture(newUser.ProfilePicture))
+            return BadRequest("Posted an invalid profile picture");
+
+        foreach (IPasswordValidator<User> validator in _userManager.PasswordValidators)
+        {
+            IdentityResult result = await validator.ValidateAsync(_userManager, null, newUser.Password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors.First().Description);
         }
-        return BadRequest("User already exists");
+        User user = new(newUser);
+        IdentityResult createResult = await _userManager.CreateAsync(user);
+        if (!createResult.Succeeded)
+            return BadRequest(createResult.Errors.First());
+        IdentityResult passwordResult = await _userManager.AddPasswordAsync(user, newUser.Password);
+
+        if (!passwordResult.Succeeded)
+            return BadRequest(createResult.Errors.First());
+
+        string profilePictureFileName = _imageStorageService.SaveImage(newUser.ProfilePicture);
+        _dbContext.ProfilePictures.Add(new ProfilePicture(user.Id, DateTime.UtcNow, profilePictureFileName));
+        _dbContext.SaveChanges();
+
+        return Ok();
     }
 
     [EnableRateLimiting(nameof(RateLimiters.Fast))]

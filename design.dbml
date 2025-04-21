@@ -22,14 +22,15 @@ Table categories {
     }
 }
 
-Table grocery_lists {
+Table groceryLists {
     id varchar [pk]
     groupId varchar [ref: > groups.id]
     creationTime timestamp
+    madeBy varchar [ref: < users.id]
 }
 
-Table grocery_list_items {
-    listId varchar [ref: > grocery_lists.id]
+Table groceryListItems {
+    listId varchar [ref: > groceryLists.id]
     itemId varchar [ref: > items.id]
     quantity int
 }
@@ -45,7 +46,7 @@ Table items {
 Table groups {
     id varchar [pk]
     name varchar
-    owner_id varchar [ref: - users.id]
+    ownerId varchar [ref: - users.id]
     creationTime timestamp
 }
 
@@ -60,28 +61,30 @@ Table recipes {
     id varchar [pk]
     groupId varchar [ref: > groups.id]
     steps varchar
+    mainPictureId varchar [ref: - recipePictures.id]
 }
 
-Table recipe_items {
-    recipe_id varchar [ref: > recipes.id]
+Table recipeItems {
+    recipeId varchar [ref: > recipes.id]
     item_id varchar [ref: > items.id]
 }
 
-Table recipe_notes {
-    recipe_id varchar [ref: > recipes.id]
-    note varchar
-    user_id varcahr [ref: > users.id]
+Table recipeNotes {
+    recipeId varchar [ref: > recipes.id]
+    recipeNote varchar
+    userId varchar [ref: > users.id]
+    createdAt datetime
 }
 
-Table recipe_pictures {
-    recipe_id varchar [ref: > recipes.id]
-    picture_id varchar
-    picture_name varchar
-    taken_at datetime
+Table recipePictures {
+    id varchar [pk]
+    recipeId varchar [ref: > recipes.id]
+    filePath varchar
+    takenAt datetime
 }
 
-Table profile_pictures {
-    picture_id varchar [pk]
-    picture_name varchar
-    taken_at datetime
+Table profilePictures {
+    userId varchar [ref: - users.id]
+    filePath varchar
+    takenAt datetime
 }

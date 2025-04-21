@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.Pkcs;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Grocery_Server.Models
 {
@@ -10,7 +10,9 @@ namespace Grocery_Server.Models
         public Guid ItemId { get; set; }
         public int Quantity { get; set; }
 
-        public virtual Recipe? Recipe { get; }
+        [AllowNull]
+        public virtual Recipe Recipe { get; }
+        [AllowNull]
         public virtual GroceryItem? Item { get; }
 
         public RecipeItem(Guid recipeId, Guid itemId, int quantity)
@@ -20,6 +22,8 @@ namespace Grocery_Server.Models
             Quantity = quantity;
         }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public RecipeItem() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     }
 }

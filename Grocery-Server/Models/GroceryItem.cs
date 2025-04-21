@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Grocery_Server.Models;
 
@@ -17,7 +18,10 @@ public class GroceryItem
     public DateTime CreationTime { get; set; }
     public DateTime LastUsed { get; set; }
 
+    [AllowNull]
     public virtual GroceryCategory Category { get; set; }
+    [AllowNull]
+    public virtual List<RecipeItem> RecipeItems { get; set; }
 
     public GroceryItem(NewItemDTO newItem)
     {

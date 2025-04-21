@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SwaggerThemes;
 using System.Text;
@@ -19,8 +20,27 @@ namespace Grocery_Server
     }
     public class Program
     {
+        private static void Seed()
+        {
+            string dir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string userFilesPath = Path.Combine(dir, "User Files");
+
+            // creating the user files directory
+            // also creates the directory for the database
+            Directory.CreateDirectory(userFilesPath);
+            using DbContext db = new Grocery_Server.DbContext();
+            // make a file to apply the migrations to
+            File.Create(Path.Combine(dir, "Database.db"));
+            // apply migrations to create a database
+            db.Database.Migrate();
+        }
         public static void Main(string[] args)
         {
+            if (args.Any(arg => arg.ToLower() == "seed"))
+            {
+                Seed();
+            }
+
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -62,34 +82,44 @@ namespace Grocery_Server
 
             builder.Services.AddTransient<JwtService>();
             builder.Services.AddSingleton<DbCleanupService>();
+            builder.Services.AddSingleton<ImageStorageService>();
 
 
             builder.Services.AddRateLimiter(options =>
-            options.AddFixedWindowLimiter(
-                policyName: nameof(RateLimiters.ReallySlow),
-                settings =>
             {
-                settings.PermitLimit = 10;
-                settings.Window = TimeSpan.FromMinutes(30);
-            }));
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddFixedWindowLimiter(
+                    policyName: nameof(RateLimiters.ReallySlow),
+                    settings =>
+                {
+                    settings.PermitLimit = 1000;
+                    settings.Window = TimeSpan.FromMinutes(30);
+                });
+            });
 
             builder.Services.AddRateLimiter(options =>
-            options.AddFixedWindowLimiter(
-                policyName: nameof(RateLimiters.Slow),
-                settings =>
             {
-                settings.PermitLimit = 15;
-                settings.Window = TimeSpan.FromMinutes(10);
-            }));
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddFixedWindowLimiter(
+                    policyName: nameof(RateLimiters.Slow),
+                    settings =>
+                {
+                    settings.PermitLimit = 15;
+                    settings.Window = TimeSpan.FromMinutes(10);
+                });
+            });
 
             builder.Services.AddRateLimiter(options =>
-            options.AddFixedWindowLimiter(
-                policyName: nameof(RateLimiters.Fast),
-                settings =>
             {
-                settings.PermitLimit = 10;
-                settings.Window = TimeSpan.FromSeconds(20);
-            }));
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddFixedWindowLimiter(
+                    policyName: nameof(RateLimiters.Fast),
+                    settings =>
+                {
+                    settings.PermitLimit = 20;
+                    settings.Window = TimeSpan.FromSeconds(10);
+                });
+            });
 
 
             WebApplication app = builder.Build();

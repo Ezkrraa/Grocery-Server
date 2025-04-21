@@ -3,6 +3,7 @@ using System;
 using Grocery_Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Grocery_Server.Migrations
 {
     [DbContext(typeof(DbContext))]
-    partial class DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250414213346_RemoveRecipePictureTakenAt")]
+    partial class RemoveRecipePictureTakenAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -542,7 +545,7 @@ namespace Grocery_Server.Migrations
             modelBuilder.Entity("Grocery_Server.Models.RecipeItem", b =>
                 {
                     b.HasOne("Grocery_Server.Models.GroceryItem", "Item")
-                        .WithMany("RecipeItems")
+                        .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -635,11 +638,6 @@ namespace Grocery_Server.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Grocery_Server.Models.GroceryItem", b =>
-                {
-                    b.Navigation("RecipeItems");
-                });
-
             modelBuilder.Entity("Grocery_Server.Models.GroceryList", b =>
                 {
                     b.Navigation("GroceryListItems");
@@ -669,7 +667,8 @@ namespace Grocery_Server.Migrations
                 {
                     b.Navigation("Invites");
 
-                    b.Navigation("ProfilePicture");
+                    b.Navigation("ProfilePicture")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -1,8 +1,7 @@
-using Grocery_Server.Controllers.UserController;
+using Grocery_Server.Controllers.AuthController;
+using Grocery_Server.Services;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Grocery_Server.Models;
@@ -15,7 +14,9 @@ public class User : IdentityUser
     public Guid? GroupId { get; set; }
 
     public virtual Group? Group { get; set; }
+    [AllowNull]
     public virtual ICollection<GroupInvite> Invites { get; set; }
+    public virtual ProfilePicture? ProfilePicture { get; set; }
 
     public User(NewUserDTO dto)
     {
@@ -32,6 +33,7 @@ public class User : IdentityUser
     {
         return other.UserName == UserName || other.Email == Email;
     }
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public User() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
