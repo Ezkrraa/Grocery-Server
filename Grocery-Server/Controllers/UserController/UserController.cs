@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Grocery_Server.Controllers.UserController;
 
@@ -32,7 +34,11 @@ public class UserController : ControllerBase
     {
         User? user = await GetUser();
         if (user == null)
-            throw new Exception("GetUser failed");
+            return Unauthorized(
+#if DEBUG
+                JsonSerializer.Serialize(User)
+#endif
+        );
 
         return Ok(new UserDisplayDTO(user));
     }
