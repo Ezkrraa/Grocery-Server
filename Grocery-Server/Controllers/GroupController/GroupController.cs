@@ -104,15 +104,19 @@ public class GroupController : ControllerBase
 
     [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPatch("retract-invite")]
-    public async Task<IActionResult> RetractInvite([FromBody] NewInviteDTO invite)
+    public async Task<IActionResult> RetractInvite([FromBody] string invitedId)
     {
+        User? addressee = _dbContext.Users.FirstOrDefault(user => user.Id == invitedId);
+        if (addressee == null)
+            return NotFound("No such user exists");
+
         User? user = await GetCurrentUser();
-        if (user == null || user.GroupId != invite.GroupId)
+        if (user == null)
             // will swap to NotFound once done
             return Unauthorized();
 
         GroupInvite? existingInvite = _dbContext.GroupInvites.FirstOrDefault(oldInvite =>
-            oldInvite.UserId == invite.UserId && oldInvite.GroupId == invite.GroupId
+            oldInvite.UserId == invitedId && oldInvite.GroupId == user.GroupId
         );
         if (existingInvite == null)
             return NotFound();

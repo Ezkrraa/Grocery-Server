@@ -42,6 +42,9 @@ public class CategoryController : ControllerBase
         User user = await GetCurrentUser();
         Group group = GetGroup(user);
 
+        if (group.CustomCategories.Any(cat => cat.CategoryName == name))
+            return Conflict("A category with this name already exists.");
+
         group.CustomCategories.Add(new GroceryCategory(name, group.Id));
         _dbContext.SaveChanges();
         return Ok();
@@ -59,6 +62,7 @@ public class CategoryController : ControllerBase
         if (foundCategory == null)
             return NotFound();
         _dbContext.Remove(foundCategory);
+        _dbContext.SaveChanges();
         return Ok();
     }
 
