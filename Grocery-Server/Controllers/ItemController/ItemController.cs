@@ -121,6 +121,20 @@ public class ItemController : ControllerBase
         return Ok();
     }
 
+    [HttpGet("search/{name}")]
+    public async Task<IActionResult> SearchItem(string name)
+    {
+        User user = await GetCurrentUser();
+        Group group = GetGroup(user);
+
+        List<ItemDetailDisplayDTO> items = _dbContext.GroceryItems
+            .Where(item => item.ItemName.ToLower().Contains(name.ToLower()))
+            .Where(item => item.Category.GroupId == group.Id)
+            .Select(item => new ItemDetailDisplayDTO(item))
+            .ToList();
+        return Ok(items);
+    }
+
     private async Task<User> GetCurrentUser()
     {
         return await _userManager.GetUserAsync(User)
