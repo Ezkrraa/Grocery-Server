@@ -44,7 +44,8 @@ public class UserController : ControllerBase
     [HttpGet("{query}")]
     public IActionResult GetInfoByName(string query)
     {
-        IEnumerable<User>? users = _dbContext.Users.Where(user => user.UserName.ToLower().Contains(query.ToLower()));
+        query = query.Normalize().ToUpper();
+        IEnumerable<User>? users = _dbContext.Users.Where(user => user.NormalizedUserName!.Contains(query));
         if (users != null)
             return Ok(users.Select(user => new UserDisplayDTO(user)));
         return NotFound("No such user");

@@ -98,7 +98,8 @@ public class AuthController : ControllerBase
 
         foreach (IPasswordValidator<User> validator in _userManager.PasswordValidators)
         {
-            IdentityResult result = await validator.ValidateAsync(_userManager, null, newUser.Password);
+            // using Identity methods to verify if a password meets our criteria
+            IdentityResult result = await validator.ValidateAsync(_userManager, null!, newUser.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors.First().Description);
         }

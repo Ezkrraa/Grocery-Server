@@ -15,8 +15,10 @@ public record GroupDisplayDTO
         Id = group.Id;
         Members = group.Members.Select(member => new UserDisplayDTO(member));
         CreatedAt = group.CreationTime;
-        Owner = group.Owner.UserName ?? group.Owner.ToString();
+        Owner = group.Owner?.UserName ?? group.Owner?.ToString() ?? "No owner";
     }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public GroupDisplayDTO() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 }

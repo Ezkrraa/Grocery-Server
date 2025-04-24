@@ -35,7 +35,7 @@ public class GroceryListController : ControllerBase
 
         if (list == null || user.GroupId != list.GroupId)
             return NotFound();
-        List<GroceryListItem> items = list.GroceryListItems?.ToList();
+        List<GroceryListItem> items = list.GroceryListItems?.ToList() ?? [];
         return Ok(
             list.GroceryListItems?.Select(item => new ListItemDisplayDTO(
                 item.ItemId,
@@ -53,7 +53,8 @@ public class GroceryListController : ControllerBase
     {
         User user = await GetCurrentUser();
 
-        GroceryList newList = new(user.Group);
+        // ignoring null-possibility since there is a RequireGroupAttribute on this
+        GroceryList newList = new(user.Group!);
 
         if (
             !itemsList.All(item =>
@@ -112,6 +113,7 @@ public class GroceryListController : ControllerBase
         );
         if (foundList == null || foundList.Group != group)
             return NotFound();
+        foundList.GroceryListItems ??= [];
 
         GroceryItem? foundItem = _dbContext.GroceryItems.FirstOrDefault(item =>
             item.Id == newItem.ItemId
@@ -119,10 +121,10 @@ public class GroceryListController : ControllerBase
         if (foundItem == null || foundItem.Category.Group != group)
             return NotFound();
 
-        if (foundList.GroceryListItems.Any(item => item.ItemId == newItem.ItemId))
+        if (foundList.GroceryListItems?.Any(item => item.ItemId == newItem.ItemId) ?? false)
             return Conflict();
 
-        foundList.GroceryListItems.Add(
+        foundList.GroceryListItems!.Add(
             new GroceryListItem(foundList.Id, newItem.ItemId, newItem.Quantity)
         );
         _dbContext.SaveChanges();

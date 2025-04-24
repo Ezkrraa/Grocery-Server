@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace Grocery_Server.Controllers.RecipeController;
@@ -37,11 +38,12 @@ public class RecipeController : ControllerBase
         List<CreateListItemDTO> items;
         try
         {
-            items = JsonSerializer.Deserialize<List<CreateListItemDTO>>(recipe.Items);
-            if (items == null || items.IsNullOrEmpty())
+            List<CreateListItemDTO>? maybeItems = JsonSerializer.Deserialize<List<CreateListItemDTO>>(recipe.Items);
+            if (maybeItems == null || maybeItems.IsNullOrEmpty())
                 return BadRequest("Recipes should contain items");
-            else if (items.Any(item => item.ItemId.ToByteArray().Equals(new Guid("{00000000-0000-0000-0000-000000000000}"))))
+            else if (maybeItems.Any(item => item.ItemId.ToByteArray().Equals(new Guid("{00000000-0000-0000-0000-000000000000}"))))
                 return BadRequest("Malformed items JSON");
+            else items = maybeItems;
         }
         catch
         {
@@ -85,7 +87,7 @@ public class RecipeController : ControllerBase
     {
         User user = GetUser();
         Group group = user.Group ?? throw new Exception();
-        IEnumerable<Recipe> recipes = query.IsNullOrEmpty() ? group.Recipes : group.Recipes.Where(r => r.Name.Contains(query) || r.Description.Contains(query));
+        IEnumerable<Recipe> recipes = query?.IsNullOrEmpty() ?? true ? group.Recipes : group.Recipes.Where(r => r.Name.Contains(query) || r.Description.Contains(query));
         return Ok(recipes.Select(r => new RecipeInfoDTO(r.Name, r.Description, r.RecipePictures.FirstOrDefault()?.FileName ?? "")));
     }
 

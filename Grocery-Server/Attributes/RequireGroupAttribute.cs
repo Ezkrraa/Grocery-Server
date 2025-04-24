@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Grocery_Server.Models;
+﻿using Grocery_Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
