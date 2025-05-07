@@ -14,10 +14,10 @@ namespace Grocery_Server.Controllers.Category;
 [Route("api/category")]
 public class CategoryController : ControllerBase
 {
-    private readonly DbContext _dbContext;
+    private readonly GroceryDbContext _dbContext;
     private readonly UserManager<User> _userManager;
 
-    public CategoryController(DbContext dbContext, UserManager<User> userManager)
+    public CategoryController(GroceryDbContext dbContext, UserManager<User> userManager)
     {
         _dbContext = dbContext;
         _userManager = userManager;

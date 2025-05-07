@@ -15,10 +15,10 @@ namespace Grocery_Server.Controllers.GroupController;
 [Route("api/group")]
 public class GroupController : ControllerBase
 {
-    private readonly DbContext _dbContext;
+    private readonly GroceryDbContext _dbContext;
     private readonly UserManager<User> _userManager;
     private readonly ImageStorageService _imageStorageService;
-    public GroupController(DbContext dbContext, UserManager<User> userManager, ImageStorageService imageStorageService)
+    public GroupController(GroceryDbContext dbContext, UserManager<User> userManager, ImageStorageService imageStorageService)
     {
         _dbContext = dbContext;
         _userManager = userManager;

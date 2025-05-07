@@ -1,10 +1,11 @@
 using Grocery_Server.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Grocery_Server;
 
-public class DbContext : IdentityDbContext<User>
+public class GroceryDbContext : IdentityDbContext<User>
 {
     // explicitly override it to show all my columns here
     public override DbSet<User> Users { get; set; }
@@ -18,10 +19,9 @@ public class DbContext : IdentityDbContext<User>
     public DbSet<RecipeItem> RecipeItems { get; set; }
     public DbSet<RecipePicture> RecipePictures { get; set; }
     public DbSet<ProfilePicture> ProfilePictures { get; set; }
-
     public string DbPath { get; }
 
-    public DbContext()
+    public GroceryDbContext(DbContextOptions<GroceryDbContext> options) : base(options)
     {
         Environment.SpecialFolder folder = Environment.SpecialFolder.LocalApplicationData;
         string path = Path.Join(Environment.GetFolderPath(folder), "Groceries-Server");
@@ -136,11 +136,5 @@ public class DbContext : IdentityDbContext<User>
 
 
         base.OnModelCreating(modelBuilder);
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-    {
-        //options.EnableSensitiveDataLogging();
-        options.UseLazyLoadingProxies().UseNpgsql($"Server = localhost; Port = 5432; Database = GroceryServerDatabase; Username=postgres; Password=postgres");
     }
 }

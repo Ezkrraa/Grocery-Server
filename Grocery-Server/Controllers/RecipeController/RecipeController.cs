@@ -21,11 +21,11 @@ namespace Grocery_Server.Controllers.RecipeController;
 [Route("api/recipe")]
 public class RecipeController : ControllerBase
 {
-    private readonly DbContext _dbContext;
+    private readonly GroceryDbContext _dbContext;
     private readonly UserManager<User> _userManager;
     private readonly ImageStorageService _imageStorageService;
 
-    public RecipeController([FromServices] DbContext dbContext, UserManager<User> userManager, ImageStorageService imageStorageService)
+    public RecipeController([FromServices] GroceryDbContext dbContext, UserManager<User> userManager, ImageStorageService imageStorageService)
     {
         _dbContext = dbContext;
         _userManager = userManager;

@@ -16,7 +16,7 @@ public class AuthController : ControllerBase
     private readonly JwtService _jwtService;
     private readonly SignInManager<User> _signInManager;
     private readonly ImageStorageService _imageStorageService;
-    private readonly DbContext _dbContext;
+    private readonly GroceryDbContext _dbContext;
     private readonly IConfiguration _config;
 
     private static readonly string[] validImageFileExtension = new string[] { "image/png", "image/jpeg", "image/jpg" };
@@ -26,7 +26,7 @@ public class AuthController : ControllerBase
         JwtService jwtService,
         SignInManager<User> signInManager,
         ImageStorageService imageStorageService,
-        DbContext dbContext,
+        GroceryDbContext dbContext,
         IConfiguration config
     )
     {

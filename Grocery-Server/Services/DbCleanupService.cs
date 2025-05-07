@@ -8,7 +8,7 @@ namespace Grocery_Server.Services
 {
     public class DbCleanupService
     {
-        public void CleanupCycle(DbContext dbContext)
+        public void CleanupCycle(GroceryDbContext dbContext)
         {
             dbContext.Database.Migrate();
             dbContext.RemoveRange(

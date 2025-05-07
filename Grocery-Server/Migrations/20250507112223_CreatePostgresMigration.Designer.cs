@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Grocery_Server.Migrations
 {
-    [DbContext(typeof(DbContext))]
+    [DbContext(typeof(GroceryDbContext))]
     [Migration("20250507112223_CreatePostgresMigration")]
     partial class CreatePostgresMigration
     {

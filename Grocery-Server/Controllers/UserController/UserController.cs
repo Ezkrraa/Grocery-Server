@@ -19,11 +19,11 @@ namespace Grocery_Server.Controllers.UserController;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    private readonly DbContext _dbContext;
+    private readonly GroceryDbContext _dbContext;
     private readonly UserManager<User> _userManager;
     private readonly ImageStorageService _imageStorageService;
 
-    public UserController([FromServices] ILogger<UserController> logger, DbContext dbContext, UserManager<User> userManager, ImageStorageService imageStorageService)
+    public UserController([FromServices] ILogger<UserController> logger, GroceryDbContext dbContext, UserManager<User> userManager, ImageStorageService imageStorageService)
     {
         _logger = logger;
         _dbContext = dbContext;

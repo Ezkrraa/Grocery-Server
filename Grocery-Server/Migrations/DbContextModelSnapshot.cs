@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Grocery_Server.Migrations
 {
-    [DbContext(typeof(DbContext))]
+    [DbContext(typeof(GroceryDbContext))]
     partial class DbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

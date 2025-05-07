@@ -15,10 +15,10 @@ namespace Grocery_Server.Controllers.GroceryListController;
 [RequireGroup]
 public class GroceryListController : ControllerBase
 {
-    private readonly DbContext _dbContext;
+    private readonly GroceryDbContext _dbContext;
     private readonly UserManager<User> _userManager;
 
-    public GroceryListController(DbContext dbContext, UserManager<User> userManager)
+    public GroceryListController(GroceryDbContext dbContext, UserManager<User> userManager)
     {
         _dbContext = dbContext;
         _userManager = userManager;

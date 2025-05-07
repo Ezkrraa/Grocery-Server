@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SwaggerThemes;
 using System.Text;
@@ -28,7 +29,9 @@ namespace Grocery_Server
             // creating the user files directory
             // also creates the directory for the database
             Directory.CreateDirectory(userFilesPath);
-            using DbContext db = new Grocery_Server.DbContext();
+            using GroceryDbContext db = new(new DbContextOptionsBuilder<GroceryDbContext>()
+            .UseLazyLoadingProxies()
+            .UseNpgsql($"Server = localhost; Port = 5432; Database = GroceryServerDatabase; Username=postgres; Password=postgres").Options));
             // make a file to apply the migrations to
             File.Create(Path.Combine(dir, "Database.db"));
             // apply migrations to create a database
@@ -50,7 +53,7 @@ namespace Grocery_Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<DbContext>();
+            builder.Services.AddDbContextPool<GroceryDbContext>(options => options.UseLazyLoadingProxies().UseNpgsql($"Server = localhost; Port = 5432; Database = GroceryServerDatabase; Username=postgres; Password=postgres"));
 
             builder
                 .Services.AddAuthentication(options =>
@@ -77,8 +80,9 @@ namespace Grocery_Server
 
             builder
                 .Services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<DbContext>()
-                .AddUserStore<UserStore<User, IdentityRole, DbContext>>();
+                .AddEntityFrameworkStores<GroceryDbContext>()
+                .AddUserStore<UserStore<User, IdentityRole, GroceryDbContext>>();
+
 
             builder.Services.AddTransient<JwtService>();
             builder.Services.AddSingleton<DbCleanupService>();
