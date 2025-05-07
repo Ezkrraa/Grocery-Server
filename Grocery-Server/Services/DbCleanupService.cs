@@ -1,14 +1,14 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Grocery_Server.Services
 {
     public class DbCleanupService
     {
-        public void CleanupCycle(GroceryDbContext dbContext)
+        public async Task CleanupCycle(GroceryDbContext dbContext)
         {
             dbContext.Database.Migrate();
             dbContext.RemoveRange(
@@ -19,7 +19,7 @@ namespace Grocery_Server.Services
                     list.CreationTime < DateTime.UtcNow.AddDays(-365)
                 )
             );
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
     }
 }

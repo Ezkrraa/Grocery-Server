@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 
@@ -127,11 +128,11 @@ public class ItemController : ControllerBase
         User user = await GetCurrentUser();
         Group group = GetGroup(user);
 
-        List<ItemDetailDisplayDTO> items = _dbContext.GroceryItems
+        List<ItemDetailDisplayDTO> items = await _dbContext.GroceryItems
             .Where(item => item.ItemName.ToLower().Contains(name.ToLower()))
             .Where(item => item.Category.GroupId == group.Id)
             .Select(item => new ItemDetailDisplayDTO(item))
-            .ToList();
+            .ToListAsync();
         return Ok(items);
     }
 
