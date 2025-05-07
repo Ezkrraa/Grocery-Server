@@ -71,7 +71,7 @@ public class GroceryListController : ControllerBase
         newList.GroceryListItems = itemsList
             .Select(item => new GroceryListItem(newList.Id, item.ItemId, item.Quantity))
             .ToList();
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 
@@ -98,7 +98,7 @@ public class GroceryListController : ControllerBase
         if (foundList.GroceryListItems != null)
             _dbContext.RemoveRange(foundList.GroceryListItems);
         _dbContext.Remove(foundList);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 
@@ -127,7 +127,7 @@ public class GroceryListController : ControllerBase
         foundList.GroceryListItems!.Add(
             new GroceryListItem(foundList.Id, newItem.ItemId, newItem.Quantity)
         );
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 
@@ -150,7 +150,7 @@ public class GroceryListController : ControllerBase
             return NotFound();
 
         _dbContext.Remove(item);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 

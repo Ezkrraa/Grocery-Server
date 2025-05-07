@@ -15,7 +15,7 @@ namespace Grocery_Server.Controllers.TestController;
 public class TestController : ControllerBase
 {
     [HttpGet()]
-    public IActionResult GetClaims()
+    public async Task<IActionResult> GetClaims()
     {
         return Ok(JsonSerializer.Serialize(User.Claims.Select(claim => claim.ToString())));
     }

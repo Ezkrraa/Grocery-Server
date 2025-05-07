@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 
 namespace Grocery_Server.Controllers.GroupController;
 
@@ -54,20 +55,20 @@ public class GroupController : ControllerBase
 
         _dbContext.Groups.Add(group);
         user.GroupId = group.Id;
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
 
         return Ok(group.GetString());
     }
 
     [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpDelete]
-    public IActionResult DeleteGroup([FromQuery] Guid id)
+    public async Task<IActionResult> DeleteGroup([FromQuery] Guid id)
     {
-        Group? group = _dbContext.Groups.FirstOrDefault(group => group.Id == id);
+        Group? group = await _dbContext.Groups.FirstOrDefaultAsync(group => group.Id == id);
         if (group == null)
             return NotFound();
         _dbContext.Groups.Remove(group);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 
@@ -80,16 +81,15 @@ public class GroupController : ControllerBase
             return Unauthorized();
         Guid groupId = (Guid)inviter.GroupId;
 
-        User? addressee = _dbContext.Users.FirstOrDefault(user => user.Id == invitedId);
+        User? addressee = await _dbContext.Users.FirstOrDefaultAsync(user => user.Id == invitedId);
         if (addressee == null)
             return NotFound("No such user exists");
 
         if (addressee.GroupId != null)
             return BadRequest($"Already a member of group {addressee.Group!.Name}");
 
-        GroupInvite? existingInvite = _dbContext.GroupInvites.FirstOrDefault(existingInvite =>
-            existingInvite.GroupId == groupId && existingInvite.UserId == invitedId
-        );
+        GroupInvite? existingInvite = await _dbContext.GroupInvites.FirstOrDefaultAsync(existingInvite =>
+            existingInvite.GroupId == groupId && existingInvite.UserId == invitedId);
         if (existingInvite != null)
         {
             if (!existingInvite.IsExpired()) // if a valid invite still exists, return conflict
@@ -98,7 +98,7 @@ public class GroupController : ControllerBase
                 _dbContext.Remove(existingInvite);
         }
         _dbContext.GroupInvites.Add(new GroupInvite(invitedId, groupId, inviter.Id));
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 
@@ -106,7 +106,7 @@ public class GroupController : ControllerBase
     [HttpPatch("retract-invite")]
     public async Task<IActionResult> RetractInvite([FromBody] string invitedId)
     {
-        User? addressee = _dbContext.Users.FirstOrDefault(user => user.Id == invitedId);
+        User? addressee = await _dbContext.Users.FirstOrDefaultAsync(user => user.Id == invitedId);
         if (addressee == null)
             return NotFound("No such user exists");
 
@@ -115,15 +115,14 @@ public class GroupController : ControllerBase
             // will swap to NotFound once done
             return Unauthorized();
 
-        GroupInvite? existingInvite = _dbContext.GroupInvites.FirstOrDefault(oldInvite =>
-            oldInvite.UserId == invitedId && oldInvite.GroupId == user.GroupId
-        );
+        GroupInvite? existingInvite = await _dbContext.GroupInvites.FirstOrDefaultAsync(oldInvite =>
+            oldInvite.UserId == invitedId && oldInvite.GroupId == user.GroupId);
         if (existingInvite == null)
             return NotFound();
 
         // expired or not, remove it from db
         _dbContext.Remove(existingInvite);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
 
         if (existingInvite.IsExpired())
             return NotFound();
@@ -169,22 +168,21 @@ public class GroupController : ControllerBase
         if (user.Group != null && user.Group.Owner == user)
             return BadRequest("Cannot join a group while owner of another");
 
-        GroupInvite? foundInvite = _dbContext.GroupInvites.FirstOrDefault(foundInvite =>
-            foundInvite.UserId == invite.UserId && foundInvite.GroupId == invite.GroupId
-        );
+        GroupInvite? foundInvite = await _dbContext.GroupInvites.FirstOrDefaultAsync(foundInvite =>
+            foundInvite.UserId == invite.UserId && foundInvite.GroupId == invite.GroupId);
         if (foundInvite == null)
             return NotFound();
         else if (foundInvite.IsExpired())
         {
             _dbContext.Remove(foundInvite);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return NotFound();
         }
         Group group = _dbContext.Groups.First(group => group.Id == invite.GroupId);
         group.Members.Add(user);
         user.Group = group;
         _dbContext.GroupInvites.Remove(foundInvite);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 
@@ -197,14 +195,13 @@ public class GroupController : ControllerBase
             // will swap to NotFound once done
             return Unauthorized();
 
-        GroupInvite? foundInvite = _dbContext.GroupInvites.FirstOrDefault(foundInvite =>
-            foundInvite.UserId == invite.UserId && foundInvite.GroupId == invite.GroupId
-        );
+        GroupInvite? foundInvite = await _dbContext.GroupInvites.FirstOrDefaultAsync(foundInvite =>
+            foundInvite.UserId == invite.UserId && foundInvite.GroupId == invite.GroupId);
         if (foundInvite == null)
             return NotFound();
 
         _dbContext.Remove(foundInvite);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
 
         if (foundInvite.IsExpired())
             return NotFound();
@@ -237,7 +234,7 @@ public class GroupController : ControllerBase
         }
 
         // TODO: fix crash that happens here
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 

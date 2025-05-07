@@ -42,23 +42,17 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{query}")]
-    public IActionResult GetInfoByName(string query)
+    public async Task<IActionResult> GetInfoByName(string query)
     {
         query = query.Normalize().ToUpper();
-        IEnumerable<User>? users = _dbContext.Users.Where(user => user.NormalizedUserName!.Contains(query));
-        if (users != null)
-            return Ok(users.Select(user => new UserDisplayDTO(user)));
-        return NotFound("No such user");
+        List<User> users = await _dbContext.Users.Where(user => user.NormalizedUserName!.Contains(query)).ToListAsync();
+        return Ok(users.Select(user => new UserDisplayDTO(user)).ToList());
     }
 
     [EnableRateLimiting(nameof(RateLimiters.ReallySlow))]
     [HttpDelete]
     public async Task<IActionResult> DeleteAccount()
     {
-        // throws sometimes?
-        // hypothesis: it doesn't work when there's images uploaded
-        // TODO: implement deletion of related images
-        // TODO: test if that fixed it
         User? user = await GetUser();
         if (user != null)
         {
@@ -75,22 +69,22 @@ public class UserController : ControllerBase
                     // delete group
                     user.Group.Owner = null;
                     _dbContext.Update(user.Group);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     _dbContext.Remove(user.Group);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                 }
             }
             _dbContext.Remove(user);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return Ok();
         }
         return NotFound();
     }
 
     [HttpGet("picture")]
-    public ActionResult<IFormFile> GetPicture(string fileName)
+    public async Task<ActionResult<IFormFile>> GetPicture(string fileName)
     {
-        ProfilePicture? pfp = _dbContext.ProfilePictures.FirstOrDefault(pfp => pfp.FileName == fileName);
+        ProfilePicture? pfp = await _dbContext.ProfilePictures.FirstOrDefaultAsync(pfp => pfp.FileName == fileName);
         if (pfp == null)
             return NotFound("No such profile picture is known");
         else

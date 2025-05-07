@@ -46,7 +46,7 @@ public class CategoryController : ControllerBase
             return Conflict("A category with this name already exists.");
 
         group.CustomCategories.Add(new GroceryCategory(name, group.Id));
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 
@@ -62,7 +62,7 @@ public class CategoryController : ControllerBase
         if (foundCategory == null)
             return NotFound();
         _dbContext.Remove(foundCategory);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 
@@ -78,7 +78,7 @@ public class CategoryController : ControllerBase
         if (foundCategory == null)
             return NotFound();
         foundCategory.CategoryName = renameInfo.Name;
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 

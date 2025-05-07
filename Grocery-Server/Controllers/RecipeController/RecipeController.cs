@@ -33,7 +33,7 @@ public class RecipeController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateRecipe([FromForm] NewRecipeDTO recipe)
+    public async Task<IActionResult> CreateRecipe([FromForm] NewRecipeDTO recipe)
     {
         List<CreateListItemDTO> items;
         try
@@ -51,7 +51,7 @@ public class RecipeController : ControllerBase
         }
 
 
-        User user = GetUser();
+        User user = await GetUser();
         Guid recipeId = Guid.NewGuid();
         Guid groupId = user.GroupId ?? throw new Exception();
         Recipe dbRecipe = new(recipeId, groupId, recipe.Name, recipe.Description, recipe.Steps);
@@ -78,14 +78,14 @@ public class RecipeController : ControllerBase
 
         _dbContext.Recipes.Add(dbRecipe);
         _dbContext.RecipeItems.AddRange(recipeItems);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 
     [HttpGet]
-    public IActionResult GetRecipeDisplays([FromQuery] string? query)
+    public async Task<IActionResult> GetRecipeDisplays([FromQuery] string? query)
     {
-        User user = GetUser();
+        User user = await GetUser();
         Group group = user.Group ?? throw new Exception();
         IEnumerable<Recipe> recipes = query?.IsNullOrEmpty() ?? true ? group.Recipes : group.Recipes.Where(r => r.Name.Contains(query) || r.Description.Contains(query));
         return Ok(recipes.Select(r => new RecipeInfoDTO(r.Name, r.Description, r.RecipePictures.FirstOrDefault()?.FileName ?? "")));
@@ -114,8 +114,8 @@ public class RecipeController : ControllerBase
     }
 
     [NonAction]
-    private User GetUser()
+    private async Task<User> GetUser()
     {
-        return _userManager.GetUserAsync(User).GetAwaiter().GetResult() ?? throw new Exception("Couldn't get user??");
+        return await _userManager.GetUserAsync(User) ?? throw new Exception("Couldn't get user??");
     }
 }

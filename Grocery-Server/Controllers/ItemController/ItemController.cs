@@ -48,7 +48,7 @@ public class ItemController : ControllerBase
         newItem.ItemName = newItem.ItemName.Trim().ToLower();
         newItem.ItemName = char.ToUpper(newItem.ItemName[0]) + newItem.ItemName[1..];
         _dbContext.GroceryItems.Add(newItem);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok(newItem.Id);
     }
 
@@ -92,7 +92,7 @@ public class ItemController : ControllerBase
 
     [EnableRateLimiting(nameof(RateLimiters.Slow))]
     [HttpPatch("rename")]
-    public IActionResult RenameItem([FromBody] RenameCategoryDTO renamedItem)
+    public async Task<IActionResult> RenameItem([FromBody] RenameCategoryDTO renamedItem)
     {
         GroceryItem? toRenameItem = _dbContext.GroceryItems.FirstOrDefault(item =>
             item.Id == renamedItem.Id
@@ -100,7 +100,7 @@ public class ItemController : ControllerBase
         if (toRenameItem == null)
             return NotFound();
         toRenameItem.ItemName = renamedItem.Name;
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok(new ItemDetailDisplayDTO(toRenameItem));
     }
 
@@ -117,7 +117,7 @@ public class ItemController : ControllerBase
         if (existingItem == null || existingItem.Category.GroupId != group.Id)
             return NotFound();
         _dbContext.GroceryItems.Remove(existingItem);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 

@@ -114,7 +114,7 @@ public class AuthController : ControllerBase
 
         string profilePictureFileName = _imageStorageService.SaveImage(newUser.ProfilePicture);
         _dbContext.ProfilePictures.Add(new ProfilePicture(user.Id, DateTime.UtcNow, profilePictureFileName));
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
 
         return Ok();
     }
