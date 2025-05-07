@@ -45,7 +45,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetInfoByName(string query)
     {
         query = query.Normalize().ToUpper();
-        List<User> users = await _dbContext.Users.Where(user => user.NormalizedUserName!.Contains(query)).ToListAsync();
+        List<User> users = await _dbContext.Users.Where(user => user.NormalizedUserName!.Contains(query)).Take(25).ToListAsync();
         return Ok(users.Select(user => new UserDisplayDTO(user)).ToList());
     }
 

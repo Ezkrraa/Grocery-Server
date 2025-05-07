@@ -98,7 +98,7 @@ namespace Grocery_Server
                     policyName: nameof(RateLimiters.ReallySlow),
                     settings =>
                 {
-                    settings.PermitLimit = 1000;
+                    settings.PermitLimit = 20;
                     settings.Window = TimeSpan.FromMinutes(30);
                 });
             });

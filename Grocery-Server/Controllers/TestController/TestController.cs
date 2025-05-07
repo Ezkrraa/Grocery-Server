@@ -7,9 +7,9 @@ using System.Text.Json;
 
 namespace Grocery_Server.Controllers.TestController;
 
+#if DEBUG
 [Route("api/[controller]")]
 [ApiController]
-#if DEBUG
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class TestController : ControllerBase
