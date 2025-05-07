@@ -31,7 +31,7 @@ namespace Grocery_Server
             Directory.CreateDirectory(userFilesPath);
             using GroceryDbContext db = new(new DbContextOptionsBuilder<GroceryDbContext>()
             .UseLazyLoadingProxies()
-            .UseNpgsql($"Server = localhost; Port = 5432; Database = GroceryServerDatabase; Username=postgres; Password=postgres").Options));
+            .UseNpgsql($"Server = localhost; Port = 5432; Database = GroceryServerDatabase; Username=postgres; Password=postgres").Options);
             // make a file to apply the migrations to
             File.Create(Path.Combine(dir, "Database.db"));
             // apply migrations to create a database
@@ -53,7 +53,9 @@ namespace Grocery_Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContextPool<GroceryDbContext>(options => options.UseLazyLoadingProxies().UseNpgsql($"Server = localhost; Port = 5432; Database = GroceryServerDatabase; Username=postgres; Password=postgres"));
+            builder.Services.AddDbContextPool<GroceryDbContext>(options => options
+            .UseLazyLoadingProxies()
+            .UseNpgsql($"Server = localhost; Port = 5432; Database = GroceryServerDatabase; Username=postgres; Password=postgres"));
 
             builder
                 .Services.AddAuthentication(options =>
