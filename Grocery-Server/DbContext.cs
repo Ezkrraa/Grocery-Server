@@ -141,6 +141,6 @@ public class DbContext : IdentityDbContext<User>
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         //options.EnableSensitiveDataLogging();
-        options.UseLazyLoadingProxies().UseSqlite($"Data Source={DbPath}");
+        options.UseLazyLoadingProxies().UseNpgsql($"Server = localhost; Port = 5432; Database = GroceryServerDatabase; Username=postgres; Password=postgres");
     }
 }
