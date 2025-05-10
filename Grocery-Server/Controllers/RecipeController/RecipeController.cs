@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
@@ -87,7 +88,10 @@ public class RecipeController : ControllerBase
     {
         User user = await GetUser();
         Group group = user.Group ?? throw new Exception();
-        IEnumerable<Recipe> recipes = query?.IsNullOrEmpty() ?? true ? group.Recipes : group.Recipes.Where(r => r.Name.Contains(query) || r.Description.Contains(query));
+        IEnumerable<Recipe> recipes = query?.IsNullOrEmpty() ?? true
+            ? group.Recipes
+            : group.Recipes
+            .Where(r => EF.Functions.ILike($"%{query}%", r.Name) || EF.Functions.ILike($"%{query}%", r.Description));
         return Ok(recipes.Select(r => new RecipeInfoDTO(r.Name, r.Description, r.RecipePictures.FirstOrDefault()?.FileName ?? "")));
     }
 

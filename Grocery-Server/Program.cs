@@ -18,7 +18,9 @@ namespace Grocery_Server
         ReallySlow,
         Slow,
         Fast,
+        ReallyFast,
     }
+
     public class Program
     {
         private static void Seed()
@@ -125,6 +127,18 @@ namespace Grocery_Server
                     settings.PermitLimit = 20;
                     settings.Window = TimeSpan.FromSeconds(10);
                 });
+            });
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddFixedWindowLimiter(
+                    policyName: nameof(RateLimiters.ReallyFast),
+                    settings =>
+                    {
+                        settings.PermitLimit = 20;
+                        settings.Window = TimeSpan.FromSeconds(10);
+                    });
             });
 
 

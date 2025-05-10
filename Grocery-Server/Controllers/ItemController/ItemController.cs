@@ -16,6 +16,7 @@ namespace Grocery_Server.Controllers.ItemController;
 [Route("api/item")]
 [EnableRateLimiting(nameof(RateLimiters.Fast))]
 [RequireGroup]
+//TODO: re-evaluate rate limiters to allow for ReallyFast searches
 public class ItemController : ControllerBase
 {
     private readonly GroceryDbContext _dbContext;
@@ -129,7 +130,7 @@ public class ItemController : ControllerBase
         Group group = GetGroup(user);
 
         List<ItemDetailDisplayDTO> items = await _dbContext.GroceryItems
-            .Where(item => item.ItemName.ToLower().Contains(name.ToLower()))
+            .Where(item => EF.Functions.ILike(name, item.ItemName))
             .Where(item => item.Category.GroupId == group.Id)
             .Select(item => new ItemDetailDisplayDTO(item))
             .ToListAsync();
