@@ -123,14 +123,14 @@ public class ItemController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("search/{name}")]
-    public async Task<IActionResult> SearchItem(string name)
+    [HttpGet("search/{query}")]
+    public async Task<IActionResult> SearchItem(string query)
     {
         User user = await GetCurrentUser();
         Group group = GetGroup(user);
 
         List<ItemDetailDisplayDTO> items = await _dbContext.GroceryItems
-            .Where(item => EF.Functions.ILike(name, item.ItemName))
+            .Where(item => EF.Functions.ILike($"%{query}%", item.ItemName))
             .Where(item => item.Category.GroupId == group.Id)
             .Select(item => new ItemDetailDisplayDTO(item))
             .ToListAsync();
