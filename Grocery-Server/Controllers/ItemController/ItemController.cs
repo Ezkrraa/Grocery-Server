@@ -35,7 +35,7 @@ public class ItemController : ControllerBase
             return BadRequest();
 
         User user = await GetCurrentUser();
-        Group group = GetGroup(user);
+        Group group = user.Group ?? throw new Exception("Should be included already");
 
         GroceryCategory? category = group.CustomCategories.FirstOrDefault(cat =>
             cat.Id == itemDTO.CategoryId
@@ -58,9 +58,10 @@ public class ItemController : ControllerBase
     public async Task<IActionResult> GetItemsFromGroup()
     {
         User user = await GetCurrentUser();
+        Group group = user.Group ?? throw new Exception("Should be included already");
 
         return Ok(
-            GetGroup(user).CustomCategories.Select(category => new CategoryListDTO(category))
+            group.CustomCategories.Select(category => new CategoryListDTO(category))
         );
     }
 
@@ -68,7 +69,7 @@ public class ItemController : ControllerBase
     public async Task<IActionResult> GetItemById([FromQuery] Guid id)
     {
         User user = await GetCurrentUser();
-        Group group = GetGroup(user);
+        Group group = user.Group ?? throw new Exception("Should be included already");
 
         GroceryItem? foundItem = _dbContext.GroceryItems.FirstOrDefault(item => item.Id == id);
         if (foundItem == null)
@@ -82,7 +83,7 @@ public class ItemController : ControllerBase
     public async Task<IActionResult> GetItemsInCategory([FromQuery] Guid id)
     {
         User user = await GetCurrentUser();
-        Group group = GetGroup(user);
+        Group group = user.Group ?? throw new Exception("Should be included already");
 
         GroceryCategory? category = group.CustomCategories.FirstOrDefault(category =>
             category.Id == id
@@ -111,7 +112,7 @@ public class ItemController : ControllerBase
     public async Task<IActionResult> DeleteItem([FromQuery] Guid id)
     {
         User user = await GetCurrentUser();
-        Group group = GetGroup(user);
+        Group group = user.Group ?? throw new Exception("Should be included already");
 
         GroceryItem? existingItem = _dbContext.GroceryItems.FirstOrDefault(item =>
             item.Id == id
@@ -127,24 +128,22 @@ public class ItemController : ControllerBase
     public async Task<IActionResult> SearchItem(string query)
     {
         User user = await GetCurrentUser();
-        Group group = GetGroup(user);
 
-        List<ItemDetailDisplayDTO> items = await _dbContext.GroceryItems
-            .Where(item => EF.Functions.ILike($"%{query}%", item.ItemName))
-            .Where(item => item.Category.GroupId == group.Id)
-            .Select(item => new ItemDetailDisplayDTO(item))
-            .ToListAsync();
+        List<ItemDetailDisplayDTO> items = await
+        _dbContext.GroceryItems
+        .Where(item => EF.Functions.ILike(item.ItemName, $"%{query}%"))
+        .Where(item => item.Category.GroupId == user.GroupId)
+        .Include(item => item.Category)
+        .Select(item => new ItemDetailDisplayDTO(item))
+        .ToListAsync();
         return Ok(items);
     }
 
     private async Task<User> GetCurrentUser()
     {
-        return await _userManager.GetUserAsync(User)
+        User? user = await _userManager.GetUserAsync(User)
             ?? throw new Exception("Should be impossible");
-    }
-
-    private Group GetGroup(User user)
-    {
-        return user.Group ?? throw new Exception("Should never happen");
+        await _dbContext.Entry(user).Reference(u => u.Group).LoadAsync();
+        return user;
     }
 }

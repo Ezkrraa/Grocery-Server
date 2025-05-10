@@ -91,7 +91,7 @@ public class RecipeController : ControllerBase
         IEnumerable<Recipe> recipes = query?.IsNullOrEmpty() ?? true
             ? group.Recipes
             : group.Recipes
-            .Where(r => EF.Functions.ILike($"%{query}%", r.Name) || EF.Functions.ILike($"%{query}%", r.Description));
+            .Where(r => EF.Functions.ILike(r.Name, $"%{query}%") || EF.Functions.ILike(r.Description, $"%{query}%"));
         return Ok(recipes.Select(r => new RecipeInfoDTO(r.Name, r.Description, r.RecipePictures.FirstOrDefault()?.FileName ?? "")));
     }
 

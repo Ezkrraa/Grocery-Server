@@ -46,7 +46,7 @@ public class UserController : ControllerBase
     {
         query = query.Normalize().ToUpper();
         List<User> users = await _dbContext.Users
-            .Where(user => EF.Functions.Like($"%{query}%", user.NormalizedUserName))
+            .Where(user => EF.Functions.Like(user.NormalizedUserName, $"%{query}%"))
             .Take(25)
             .ToListAsync();
         return Ok(users.Select(user => new UserDisplayDTO(user)).ToList());
