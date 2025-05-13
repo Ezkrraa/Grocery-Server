@@ -61,7 +61,13 @@ public class RecipeController : ControllerBase
             return BadRequest("Your group already contains a recipe with that name");
 
         List<RecipeItem> recipeItems = items.Select(ri => new RecipeItem(recipeId, ri.ItemId, ri.Quantity)).ToList();
-
+        foreach (RecipeItem item in recipeItems)
+        {
+            if (!_dbContext.Groups.Any(gi => gi.Id == item.ItemId))
+            {
+                return BadRequest($"No item with ID '{item.ItemId}' was known");
+            }
+        }
 
         if (recipe.Pictures != null)
         {
@@ -92,7 +98,7 @@ public class RecipeController : ControllerBase
             ? group.Recipes
             : group.Recipes
             .Where(r => EF.Functions.ILike(r.Name, $"%{query}%") || EF.Functions.ILike(r.Description, $"%{query}%"));
-        return Ok(recipes.Select(r => new RecipeInfoDTO(r.Name, r.Description, r.RecipePictures.FirstOrDefault()?.FileName ?? "")));
+        return Ok(recipes.Select(r => new RecipeInfoDTO(r)));
     }
 
 
