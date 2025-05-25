@@ -63,7 +63,7 @@ public class RecipeController : ControllerBase
         List<RecipeItem> recipeItems = items.Select(ri => new RecipeItem(recipeId, ri.ItemId, ri.Quantity)).ToList();
         foreach (RecipeItem item in recipeItems)
         {
-            if (!_dbContext.Groups.Any(gi => gi.Id == item.ItemId))
+            if (!_dbContext.GroceryItems.Any(gi => gi.Id == item.ItemId))
             {
                 return BadRequest($"No item with ID '{item.ItemId}' was known");
             }
