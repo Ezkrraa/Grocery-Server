@@ -5,7 +5,7 @@ namespace Grocery_Server.Models;
 public class RecipePicture
 {
     public Guid Id { get; set; }
-    public Guid RecipeId { get; set; }
+    public Guid? RecipeId { get; set; }
     public string FileName { get; set; }
 
     [AllowNull]

@@ -131,7 +131,7 @@ public class GroceryDbContext : IdentityDbContext<User>
         modelBuilder.Entity<User>()
             .HasOne(u => u.ProfilePicture)
             .WithOne(pfp => pfp.User)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
 
 
 

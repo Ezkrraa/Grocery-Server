@@ -81,6 +81,9 @@ public class ImageStorageService
         return File.OpenRead(path);
     }
 
+    public List<string> GetImages()
+        => [.. Directory.GetFiles(userFilesPath, "*.jpeg")];
+
     public void DeleteImage(string fileName)
     {
         string dir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

@@ -89,8 +89,8 @@ namespace Grocery_Server
 
 
             builder.Services.AddTransient<JwtService>();
-            builder.Services.AddSingleton<DbCleanupService>();
             builder.Services.AddSingleton<ImageStorageService>();
+            builder.Services.AddTransient<CleanupService>();
 
 
             builder.Services.AddRateLimiter(options =>
@@ -143,6 +143,7 @@ namespace Grocery_Server
 
 
             WebApplication app = builder.Build();
+            //app.Services.GetService<CleanupService>().Schedule(CancellationToken.None);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

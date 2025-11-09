@@ -1,6 +1,4 @@
-﻿// manages users, lets them create accs, reset passwords, etc
-//using Grocery_Server.ControllerModels;
-using Grocery_Server.Controllers.GroceryListController;
+﻿using Grocery_Server.Controllers.GroceryListController;
 using Grocery_Server.Models;
 using Grocery_Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace Grocery_Server.Controllers.RecipeController;
