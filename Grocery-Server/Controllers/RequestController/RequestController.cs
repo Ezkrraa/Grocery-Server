@@ -24,10 +24,10 @@ public class RequestController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<RequestListItemDTO>> GetRequests()
+    public async Task<IEnumerable<RequestedItemDTO>> GetRequests()
     {
         // safe to assert group != null due to RequireGroup attr on controller
-        return (await GetUser()).Group!.RequestListItems.Select(rli => new RequestListItemDTO(rli));
+        return (await GetUser()).Group!.RequestListItems.Select(rli => new RequestedItemDTO(rli.ItemId, rli.Item.ItemName, rli.Quantity));
     }
 
     [HttpPost]
