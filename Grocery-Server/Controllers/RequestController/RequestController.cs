@@ -29,7 +29,7 @@ public class RequestController : ControllerBase
     {
         // safe to assert group != null due to RequireGroup attr on controller
         User user = await GetUser();
-        var dtos = _dbContext.RequestListItems
+        return _dbContext.RequestListItems
             .Where(rli => rli.GroupId == user.GroupId)
             .Include(rli => rli.Item)
             .Select(rli => new RequestedItemDTO(rli.ItemId, rli.Item.ItemName, rli.Quantity));
