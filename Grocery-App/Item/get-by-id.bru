@@ -1,0 +1,23 @@
+meta {
+  name: get-by-id
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{base_url}}/api/item/by-id
+  body: none
+  auth: bearer
+}
+
+params:query {
+  id: d05a2e15-2601-4ed7-a8b1-c1c70da4af58
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

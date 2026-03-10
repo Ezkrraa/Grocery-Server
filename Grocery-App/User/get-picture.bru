@@ -1,0 +1,24 @@
+meta {
+  name: get-picture
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{base_url}}/api/user/picture?fileName=0c94f953-ce8f-494f-a2a2-4d89818ef505.jpeg
+  body: none
+  auth: bearer
+}
+
+params:query {
+  fileName: 0c94f953-ce8f-494f-a2a2-4d89818ef505.jpeg
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

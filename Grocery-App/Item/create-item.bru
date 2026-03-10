@@ -1,0 +1,31 @@
+meta {
+  name: create-item
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{base_url}}/api/item
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "CategoryId": "9a2df937-2bea-43bb-8a1a-fb2e0350fb40",
+    "Name": "Appel"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

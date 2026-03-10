@@ -1,0 +1,19 @@
+meta {
+  name: get-group
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{base_url}}/api/group
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,19 @@
+meta {
+  name: is-invited
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{base_url}}/api/group/is-invited/c4047551-1be9-40c9-ab07-ea81cf5449b2
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

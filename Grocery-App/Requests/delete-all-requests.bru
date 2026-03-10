@@ -1,0 +1,20 @@
+meta {
+  name: delete-all-requests
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{base_url}}/api/requests/reset
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

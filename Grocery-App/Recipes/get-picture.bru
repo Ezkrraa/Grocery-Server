@@ -1,0 +1,23 @@
+meta {
+  name: get-picture
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}//api/recipe/picture
+  body: none
+  auth: bearer
+}
+
+params:query {
+  fileName: 0e7c848a-4a2c-4dde-bc4c-e0e6f0e86f37.jpeg
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ijc1OTQ2NjQxLTUzNzgtNDMwMC05ZWI5LThlZjFkMDJlYmNkYiIsImV4cCI6MTc1MjQzODI3NiwiaXNzIjoiR3JvY2VyeVNlcnZlciIsImF1ZCI6Ikdyb2NlcnlTZXJ2ZXIifQ.qY1NOA77PaJ9RWTTkdqAOAOQgyGz5VxEs035C2o3XQY
+}
+
+settings {
+  encodeUrl: true
+}

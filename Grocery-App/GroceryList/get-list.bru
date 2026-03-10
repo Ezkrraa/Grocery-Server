@@ -1,0 +1,23 @@
+meta {
+  name: get-list
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/api/grocery-list/get-list/e90cb132-2dcf-4421-817b-4af83eda96c6
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~id: e90cb132-2dcf-4421-817b-4af83eda96c6
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

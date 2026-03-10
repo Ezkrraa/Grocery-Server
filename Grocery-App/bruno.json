@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Grocery-App",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

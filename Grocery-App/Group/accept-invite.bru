@@ -1,0 +1,30 @@
+meta {
+  name: accept-invite
+  type: http
+  seq: 20
+}
+
+post {
+  url: {{base_url}}/api/group/accept-invite
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+  		"groupId": "3013146f-bc79-4d53-9228-eced311932ed",
+  		"userId": "66b1f0f2-0f05-4680-a0eb-2462d05f181a"
+  	}
+}
+
+settings {
+  encodeUrl: true
+}

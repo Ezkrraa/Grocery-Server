@@ -1,0 +1,23 @@
+meta {
+  name: get-by-category
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{base_url}}/api/item/by-category
+  body: none
+  auth: bearer
+}
+
+params:query {
+  id: ad463da8-5bda-4d75-94d6-77494d7a5782
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

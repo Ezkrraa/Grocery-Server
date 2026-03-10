@@ -1,0 +1,60 @@
+meta {
+  name: create-list
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/api/grocery-list/create-list
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  [
+  	{
+  		"itemId": "c71e6e27-0703-45d9-90fb-ce4e1bf89006",
+  		"quantity": "1"
+  	},
+  	{
+  		"itemId": "2d7d895a-f3f9-4ce7-9150-59cc951eb751",
+  		"quantity": "2"
+  	},
+  	{
+  		"itemId": "e3df6c69-1024-4f55-8b3f-720e3ff32f33",
+  		"quantity": "12"
+  	},
+  	{
+  		"itemId": "e6400808-30bf-4d3a-9ed0-4b8564087119",
+  		"quantity": "3"
+  	},
+  	{
+  		"itemId": "30e8e028-b07c-4936-994c-a9f235a1e222",
+  		"quantity": "1"
+  	},
+  	{
+  		"itemId": "cceff287-cfba-4f14-bc2b-8abe012b8d35",
+  		"quantity": "1"
+  	},
+  	{
+  		"itemId": "e6bf7fef-3853-4f44-aa5f-659241898de9",
+  		"quantity": "1"
+  	},
+  	{
+  		"itemId": "604e2b73-1cd1-4d25-9738-7efa4f2b3fff",
+  		"quantity": "1"
+  	}
+  ]
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,19 @@
+meta {
+  name: New Request
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/api/Test
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

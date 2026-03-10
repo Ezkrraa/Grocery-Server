@@ -1,0 +1,23 @@
+meta {
+  name: delete-item
+  type: http
+  seq: 14
+}
+
+delete {
+  url: {{base_url}}/api/item/delete
+  body: none
+  auth: bearer
+}
+
+params:query {
+  id: 25d97b67-f93b-40f2-b9ef-59998cf8ed4a
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

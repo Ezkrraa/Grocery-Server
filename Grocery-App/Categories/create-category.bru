@@ -1,0 +1,31 @@
+meta {
+  name: create-category
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/api/category
+  body: json
+  auth: bearer
+}
+
+params:query {
+  ~: 
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  "Fruit"
+}
+
+settings {
+  encodeUrl: true
+}

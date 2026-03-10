@@ -1,0 +1,29 @@
+meta {
+  name: create-group
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{base_url}}/api/group/create
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+  	"Name": "Oppland-testing"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

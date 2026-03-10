@@ -1,0 +1,23 @@
+meta {
+  name: delete-group
+  type: http
+  seq: 17
+}
+
+delete {
+  url: https://localhost:7020/api/group
+  body: none
+  auth: bearer
+}
+
+params:query {
+  id: 5ed01185-efb2-4133-9351-a7b6d3eec32e
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

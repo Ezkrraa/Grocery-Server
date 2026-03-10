@@ -1,0 +1,27 @@
+meta {
+  name: send-invite
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{base_url}}/api/group/send-invite
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  "33e70d59-6ebe-4b59-9b91-363922c9b580"
+}
+
+settings {
+  encodeUrl: true
+}

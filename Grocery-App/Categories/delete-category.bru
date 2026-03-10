@@ -1,0 +1,23 @@
+meta {
+  name: delete-category
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{base_url}}/api/category
+  body: none
+  auth: bearer
+}
+
+params:query {
+  id: 38563d95-e22d-42fe-8ec1-7dfd0149d028
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

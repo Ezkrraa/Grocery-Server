@@ -1,0 +1,30 @@
+meta {
+  name: rename-item
+  type: http
+  seq: 13
+}
+
+patch {
+  url: {{base_url}}/api/item/rename
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+  	"Id":"2d7d895a-f3f9-4ce7-9150-59cc951eb751",
+  	"Name":"Komkommer"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

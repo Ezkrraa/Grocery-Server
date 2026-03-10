@@ -1,0 +1,27 @@
+meta {
+  name: login
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/api/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "Username": "testacc2",
+    "Password": "Password_123?"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

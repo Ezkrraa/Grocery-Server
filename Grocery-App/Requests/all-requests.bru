@@ -1,0 +1,20 @@
+meta {
+  name: all-requests
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/requests
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

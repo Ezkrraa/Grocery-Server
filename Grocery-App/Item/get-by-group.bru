@@ -1,0 +1,28 @@
+meta {
+  name: get-by-group
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{base_url}}/api/item/by-group
+  body: multipartForm
+  auth: bearer
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  : 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

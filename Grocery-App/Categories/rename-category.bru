@@ -1,0 +1,30 @@
+meta {
+  name: rename-category
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{base_url}}/api/category/rename
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+  	"id": "494ea79e-2c8e-4aa1-9ec0-61e09a6a95de",
+  	"name": "Groente en Fruit"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

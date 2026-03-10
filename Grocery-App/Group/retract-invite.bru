@@ -1,0 +1,27 @@
+meta {
+  name: retract-invite
+  type: http
+  seq: 19
+}
+
+patch {
+  url: {{base_url}}/api/group/retract-invite
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  "41bc6e37-f68b-4ac7-bfe7-c5ba84afcd66"
+}
+
+settings {
+  encodeUrl: true
+}

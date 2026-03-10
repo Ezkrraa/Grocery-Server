@@ -1,0 +1,19 @@
+meta {
+  name: get-all
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base_url}}/api/category/all
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+}

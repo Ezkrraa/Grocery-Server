@@ -1,0 +1,30 @@
+meta {
+  name: deny-invite
+  type: http
+  seq: 21
+}
+
+post {
+  url: {{base_url}}/api/group/deny-invite
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+  	"householdId": "72211525-bed9-4a35-af4f-08721c6cab71",
+  	"userId": "7f71c2fb-8fd4-48a1-9f9d-8d9b22d2e01f"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
