@@ -14,6 +14,7 @@ public class Group
 
     public DateTime CreationTime { get; set; }
 
+
     [AllowNull]
     public virtual User? Owner { get; set; }
 
@@ -27,6 +28,8 @@ public class Group
     public virtual ICollection<GroupInvite> Invites { get; set; }
     [AllowNull]
     public virtual ICollection<Recipe> Recipes { get; set; }
+    [AllowNull]
+    public virtual ICollection<RequestListItem> RequestListItems { get; set; }
 
     public Group(User creator, string name)
     {

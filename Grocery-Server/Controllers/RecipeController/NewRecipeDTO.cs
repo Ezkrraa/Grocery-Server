@@ -5,6 +5,8 @@ public class NewRecipeDTO
     public string Name { get; set; }
     public string Description { get; set; }
     // encoded as JSON
+
+    //TODO: try storing as a list directly
     public string Items { get; set; }
     public string Steps { get; set; }
     public List<IFormFile>? Pictures { get; set; }

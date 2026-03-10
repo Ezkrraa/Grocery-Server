@@ -3,6 +3,7 @@ using System;
 using Grocery_Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Grocery_Server.Migrations
 {
     [DbContext(typeof(GroceryDbContext))]
-    partial class DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260308092606_requestListItems")]
+    partial class requestListItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,7 +258,7 @@ namespace Grocery_Server.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("RequestListItems");
+                    b.ToTable("RequestListItem");
                 });
 
             modelBuilder.Entity("Grocery_Server.Models.User", b =>

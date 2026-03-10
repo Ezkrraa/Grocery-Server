@@ -75,7 +75,7 @@ public class AuthController : ControllerBase
             passwordCombo.NewPassword
         );
         if (!result.Succeeded)
-            return BadRequest();
+            return BadRequest(result.Errors.First());
         return Ok();
     }
 
@@ -96,20 +96,9 @@ public class AuthController : ControllerBase
         if (!_imageStorageService.IsValidProfilePicture(newUser.ProfilePicture))
             return BadRequest("Posted an invalid profile picture");
 
-        foreach (IPasswordValidator<User> validator in _userManager.PasswordValidators)
-        {
-            // using Identity methods to verify if a password meets our criteria
-            IdentityResult result = await validator.ValidateAsync(_userManager, null!, newUser.Password);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors.First().Description);
-        }
         User user = new(newUser);
-        IdentityResult createResult = await _userManager.CreateAsync(user);
+        IdentityResult createResult = await _userManager.CreateAsync(user, newUser.Password);
         if (!createResult.Succeeded)
-            return BadRequest(createResult.Errors.First());
-        IdentityResult passwordResult = await _userManager.AddPasswordAsync(user, newUser.Password);
-
-        if (!passwordResult.Succeeded)
             return BadRequest(createResult.Errors.First());
 
         string profilePictureFileName = _imageStorageService.SaveImage(newUser.ProfilePicture);

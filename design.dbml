@@ -69,12 +69,12 @@ Table recipeItems {
     item_id varchar [ref: > items.id]
 }
 
-Table recipeNotes {
-    recipeId varchar [ref: > recipes.id]
-    recipeNote varchar
-    userId varchar [ref: > users.id]
-    createdAt datetime
-}
+// Table recipeNotes {
+//     recipeId varchar [ref: > recipes.id]
+//     recipeNote varchar
+//     userId varchar [ref: > users.id]
+//     createdAt datetime
+// }
 
 Table recipePictures {
     id varchar [pk]
@@ -87,4 +87,10 @@ Table profilePictures {
     userId varchar [ref: - users.id]
     filePath varchar
     takenAt datetime
+}
+
+Table requestListItems {
+    groupId varchar [ref: > groups.id]
+    itemId varchar [ref: > items.id]
+    quantity int
 }

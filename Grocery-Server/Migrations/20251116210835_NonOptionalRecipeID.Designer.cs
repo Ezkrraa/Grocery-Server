@@ -3,6 +3,7 @@ using System;
 using Grocery_Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Grocery_Server.Migrations
 {
     [DbContext(typeof(GroceryDbContext))]
-    partial class DbContextModelSnapshot : ModelSnapshot
+    [Migration("20251116210835_NonOptionalRecipeID")]
+    partial class NonOptionalRecipeID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,24 +241,6 @@ namespace Grocery_Server.Migrations
                     b.HasIndex("RecipeId");
 
                     b.ToTable("RecipePictures");
-                });
-
-            modelBuilder.Entity("Grocery_Server.Models.RequestListItem", b =>
-                {
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.HasKey("GroupId", "ItemId");
-
-                    b.HasIndex("ItemId");
-
-                    b.ToTable("RequestListItems");
                 });
 
             modelBuilder.Entity("Grocery_Server.Models.User", b =>
@@ -594,25 +579,6 @@ namespace Grocery_Server.Migrations
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("Grocery_Server.Models.RequestListItem", b =>
-                {
-                    b.HasOne("Grocery_Server.Models.Group", "Group")
-                        .WithMany("RequestListItems")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Grocery_Server.Models.GroceryItem", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-
-                    b.Navigation("Item");
-                });
-
             modelBuilder.Entity("Grocery_Server.Models.User", b =>
                 {
                     b.HasOne("Grocery_Server.Models.Group", "Group")
@@ -700,8 +666,6 @@ namespace Grocery_Server.Migrations
                     b.Navigation("Members");
 
                     b.Navigation("Recipes");
-
-                    b.Navigation("RequestListItems");
                 });
 
             modelBuilder.Entity("Grocery_Server.Models.Recipe", b =>

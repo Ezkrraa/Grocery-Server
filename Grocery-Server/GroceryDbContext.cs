@@ -19,6 +19,7 @@ public class GroceryDbContext : IdentityDbContext<User>
     public DbSet<RecipeItem> RecipeItems { get; set; }
     public DbSet<RecipePicture> RecipePictures { get; set; }
     public DbSet<ProfilePicture> ProfilePictures { get; set; }
+    public DbSet<RequestListItem> RequestListItems { get; set; }
     public string DbPath { get; }
 
     public GroceryDbContext(DbContextOptions<GroceryDbContext> options) : base(options)
@@ -70,6 +71,13 @@ public class GroceryDbContext : IdentityDbContext<User>
         modelBuilder.Entity<Group>()
             .HasMany(group => group.Recipes)
             .WithOne(recipe => recipe.Group)
+            .HasPrincipalKey(g => g.Id)
+            .HasForeignKey(r => r.GroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Group>()
+            .HasMany(group => group.RequestListItems)
+            .WithOne(rli => rli.Group)
             .HasPrincipalKey(g => g.Id)
             .HasForeignKey(r => r.GroupId)
             .OnDelete(DeleteBehavior.Cascade);

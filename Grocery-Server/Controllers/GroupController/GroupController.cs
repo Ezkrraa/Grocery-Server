@@ -168,20 +168,17 @@ public class GroupController : ControllerBase
         if (user.Group != null && user.Group.Owner == user)
             return BadRequest("Cannot join a group while owner of another");
 
-        GroupInvite? foundInvite = await _dbContext.GroupInvites.FirstOrDefaultAsync(foundInvite =>
-            foundInvite.UserId == invite.UserId && foundInvite.GroupId == invite.GroupId);
+        GroupInvite? foundInvite = await _dbContext.GroupInvites
+            .Where(i => !i.IsExpired())
+            .Include(i => i.Group)
+            .FirstOrDefaultAsync(foundInvite =>
+                foundInvite.UserId == invite.UserId && foundInvite.GroupId == invite.GroupId);
         if (foundInvite == null)
             return NotFound();
-        else if (foundInvite.IsExpired())
-        {
-            _dbContext.Remove(foundInvite);
-            await _dbContext.SaveChangesAsync();
-            return NotFound();
-        }
-        Group group = _dbContext.Groups.First(group => group.Id == invite.GroupId);
+        Group group = foundInvite.Group;
         group.Members.Add(user);
         user.Group = group;
-        _dbContext.GroupInvites.Remove(foundInvite);
+        _dbContext.Remove(foundInvite);
         await _dbContext.SaveChangesAsync();
         return Ok();
     }
