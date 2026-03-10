@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 
 namespace Grocery_Server.Controllers.RequestController;
 
@@ -27,7 +28,11 @@ public class RequestController : ControllerBase
     public async Task<IEnumerable<RequestedItemDTO>> GetRequests()
     {
         // safe to assert group != null due to RequireGroup attr on controller
-        return (await GetUser()).Group!.RequestListItems.Select(rli => new RequestedItemDTO(rli.ItemId, rli.Item.ItemName, rli.Quantity));
+        User user = await GetUser();
+        var dtos = _dbContext.RequestListItems
+            .Where(rli => rli.GroupId == user.GroupId)
+            .Include(rli => rli.Item)
+            .Select(rli => new RequestedItemDTO(rli.ItemId, rli.Item.ItemName, rli.Quantity));
     }
 
     [HttpPost]
