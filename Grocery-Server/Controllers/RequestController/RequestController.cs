@@ -45,7 +45,11 @@ public class RequestController : ControllerBase
 
         var foundItem = myGroup.RequestListItems.FirstOrDefault(rli => rli.ItemId == newItem.ItemId);
         if (foundItem != null)
+        {
             foundItem.Quantity = newItem.Quantity;
+            if (foundItem.Quantity == 0)
+                _dbContext.Remove(foundItem);
+        }
         else
             myGroup.RequestListItems.Add(new RequestListItem(myGroup.Id, newItem.ItemId, newItem.Quantity));
         await _dbContext.SaveChangesAsync();
