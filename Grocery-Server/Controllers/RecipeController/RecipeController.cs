@@ -48,7 +48,6 @@ public class RecipeController : ControllerBase
             return BadRequest("Invalid items JSON");
         }
 
-
         User user = await GetUser();
         Guid recipeId = Guid.NewGuid();
         Guid groupId = user.GroupId ?? throw new Exception();
@@ -61,9 +60,7 @@ public class RecipeController : ControllerBase
         foreach (RecipeItem item in recipeItems)
         {
             if (!_dbContext.GroceryItems.Any(gi => gi.Id == item.ItemId))
-            {
                 return BadRequest($"No item with ID '{item.ItemId}' was known");
-            }
         }
 
         if (recipe.Pictures != null)
@@ -118,6 +115,19 @@ public class RecipeController : ControllerBase
                 return NotFound("Error loading from storage");
             }
         }
+    }
+
+    [HttpGet("ingredients")]
+    public async Task<IActionResult> GetIngredients([FromQuery] string name)
+    {
+        User user = await GetUser();
+        Recipe? recipe = await _dbContext.Recipes
+          .Include(recipe => recipe.RecipeItems)
+          .ThenInclude(recipeItem => recipeItem.Item)
+          .FirstOrDefaultAsync(recipe => recipe.GroupId == user.GroupId && recipe.Name == name);
+        if (recipe == null)
+          return NotFound();
+        return Ok(recipe.RecipeItems.Select(item => new ListItemDisplayDTO(item.ItemId, item.Item.ItemName ?? "", item.Quantity, item.Item.CategoryId, item.Item.Category.CategoryName)));
     }
 
     [NonAction]

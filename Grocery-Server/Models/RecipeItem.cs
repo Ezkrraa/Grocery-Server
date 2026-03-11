@@ -13,7 +13,7 @@ namespace Grocery_Server.Models
         [AllowNull]
         public virtual Recipe Recipe { get; }
         [AllowNull]
-        public virtual GroceryItem? Item { get; }
+        public virtual GroceryItem Item { get; }
 
         public RecipeItem(Guid recipeId, Guid itemId, int quantity)
         {
