@@ -117,14 +117,14 @@ public class RecipeController : ControllerBase
         }
     }
 
-    [HttpGet("ingredients")]
-    public async Task<IActionResult> GetIngredients([FromQuery] string name)
+    [HttpGet("ingredients/{id}")]
+    public async Task<IActionResult> GetIngredients(Guid id)
     {
         User user = await GetUser();
         Recipe? recipe = await _dbContext.Recipes
           .Include(recipe => recipe.RecipeItems)
           .ThenInclude(recipeItem => recipeItem.Item)
-          .FirstOrDefaultAsync(recipe => recipe.GroupId == user.GroupId && recipe.Name == name);
+          .FirstOrDefaultAsync(recipe => recipe.GroupId == user.GroupId && recipe.Id == id);
         if (recipe == null)
           return NotFound();
         return Ok(recipe.RecipeItems.Select(item => new ListItemDisplayDTO(item.ItemId, item.Item.ItemName ?? "", item.Quantity, item.Item.CategoryId, item.Item.Category.CategoryName)));

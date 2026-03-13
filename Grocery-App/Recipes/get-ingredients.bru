@@ -1,13 +1,17 @@
 meta {
-  name: get-picture
+  name: get-ingredients
   type: http
   seq: 4
 }
 
 get {
-  url: {{base_url}}/api/recipe/picture/8bd2f8cc-621c-42cd-b298-47d9bf613adc.jpeg
+  url: {{base_url}}/api/recipe/ingredients?name=Hotdog dog
   body: none
   auth: bearer
+}
+
+params:query {
+  name: Hotdog dog
 }
 
 auth:bearer {

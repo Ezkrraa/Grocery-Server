@@ -19,23 +19,25 @@ auth:bearer {
 }
 
 body:multipart-form {
-  Name: Dice lost :3
+  Name: Hotdog dog
   Items: '''
     [
-    	{
-    		"ItemId": "faf9358f-e60d-4bdb-8264-7410f69e35cf",
-    		"Quantity": 1
-    	}
+      {
+        "ItemId": "123703d5-d96b-4e82-8996-3762f871216a",
+        "Quantity": 2
+      }
     ]
+    
   '''
   Steps: '''
-    1. bake
-    2. cook
+    1. give costume
+    2. rejoice
   '''
-  Description: test 3
-  Pictures: 
+  Description: Everyone loves this floofy critter.
+  Pictures: @file(F:\Files\Downloads\Pupper.png)
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
